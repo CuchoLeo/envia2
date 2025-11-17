@@ -1,0 +1,35 @@
+# Sistema de Seguimiento de Órdenes de Compra para Reservas Hoteleras
+# Dependencias principales
+
+# Framework web
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# Base de datos
+sqlalchemy>=2.0.0
+
+# Procesamiento de correos IMAP
+# imapclient>=3.0.1  # Comentado - usamos wrapper personalizado para Python 3.14+
+email-validator>=2.1.0
+
+# Procesamiento de PDF
+PyPDF2>=3.0.1
+pdfplumber>=0.10.3
+
+# Scheduler y tareas programadas
+apscheduler>=3.10.4
+
+# Plantillas de correo
+jinja2>=3.1.2
+
+# Utilidades
+python-dotenv>=1.0.0
+python-dateutil>=2.8.2
+
+# Validación y configuración
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# Logging
+loguru>=0.7.2

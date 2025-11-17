@@ -1,0 +1,140 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   ✅ SOLUCIÓN PARA PYTHON 3.14                                          ║
+║   Error de IMAPClient resuelto con wrapper personalizado                ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+🔍 PROBLEMA IDENTIFICADO
+═══════════════════════════════════════════════════════════════════════════
+
+Error: property 'file' of 'IMAP4_TLS' object has no setter
+
+Causa: Python 3.14 introdujo cambios en imaplib que hacen que IMAPClient
+       (biblioteca de terceros) sea incompatible.
+
+
+✅ SOLUCIÓN IMPLEMENTADA
+═══════════════════════════════════════════════════════════════════════════
+
+1. Creado wrapper personalizado: imap_wrapper.py
+   → Usa biblioteca estándar imaplib directamente
+   → Compatible con Python 3.14+
+   → No requiere dependencias externas
+
+2. Actualizado email_monitor.py
+   → Ahora usa SimpleIMAPClient en lugar de IMAPClient
+   → Mantiene misma funcionalidad
+
+3. Actualizado requirements.txt
+   → IMAPClient es opcional (comentado)
+   → Sistema funciona sin dependencias externas de IMAP
+
+
+🚀 CÓMO USAR
+═══════════════════════════════════════════════════════════════════════════
+
+1️⃣  Reinstala dependencias (sin IMAPClient):
+
+    pip install -r requirements.txt
+
+2️⃣  Prueba la conexión:
+
+    python test_imap_simple.py
+
+3️⃣  Si todo funciona, inicia el sistema:
+
+    python app.py
+
+
+🧪 VERIFICAR INSTALACIÓN
+═══════════════════════════════════════════════════════════════════════════
+
+python verify_install.py
+
+Deberías ver:
+  ✅ Todos los módulos están instalados
+  📦 Módulos personalizados del proyecto:
+     - imap_wrapper.py (compatible con Python 3.14+)
+
+
+📝 ARCHIVOS MODIFICADOS/CREADOS
+═══════════════════════════════════════════════════════════════════════════
+
+NUEVO:
+  ✅ imap_wrapper.py           - Wrapper IMAP personalizado
+  ✅ test_imap_simple.py       - Test del wrapper
+  ✅ SOLUCION_PYTHON314.txt    - Esta guía
+
+MODIFICADO:
+  ✅ email_monitor.py          - Usa SimpleIMAPClient
+  ✅ requirements.txt          - IMAPClient comentado
+  ✅ verify_install.py         - No verifica IMAPClient
+
+
+💡 VENTAJAS DEL WRAPPER PERSONALIZADO
+═══════════════════════════════════════════════════════════════════════════
+
+✓ Compatible con Python 3.14+
+✓ Sin dependencias externas problemáticas
+✓ Usa bibliotecas estándar de Python (imaplib, email)
+✓ Más simple y directo
+✓ Más fácil de debuggear
+✓ No requiere actualizaciones de terceros
+
+
+🐛 SI AÚN TIENES PROBLEMAS
+═══════════════════════════════════════════════════════════════════════════
+
+1. Verifica que .env esté configurado:
+
+   IMAP_HOST=imap.gmail.com
+   IMAP_PORT=993
+   IMAP_USERNAME=tu-cuenta@gmail.com
+   IMAP_PASSWORD=tu_password_app
+
+2. Usa contraseña de aplicación de Gmail:
+
+   https://myaccount.google.com/apppasswords
+
+3. Habilita IMAP en Gmail:
+
+   Gmail → Configuración → Reenvío y correo POP/IMAP → Habilitar IMAP
+
+4. Prueba conexión:
+
+   python test_imap_simple.py
+
+5. Lee guía de troubleshooting:
+
+   cat TROUBLESHOOTING.md
+
+
+📊 COMPARACIÓN: ANTES vs DESPUÉS
+═══════════════════════════════════════════════════════════════════════════
+
+ANTES (IMAPClient):
+  from imapclient import IMAPClient
+  client = IMAPClient(host, port, ssl=True, ssl_context=ctx)
+  ❌ Error en Python 3.14
+
+DESPUÉS (Wrapper personalizado):
+  from imap_wrapper import SimpleIMAPClient
+  client = SimpleIMAPClient(host, port, use_ssl=True)
+  ✅ Funciona en Python 3.14+
+
+
+🎯 PRÓXIMOS PASOS
+═══════════════════════════════════════════════════════════════════════════
+
+1. python test_imap_simple.py    # Probar conexión
+2. python verify_install.py       # Verificar todo
+3. python app.py                  # Iniciar sistema
+4. http://localhost:8001          # Abrir dashboard
+
+
+╔══════════════════════════════════════════════════════════════════════════╗
+║  ✅ Sistema actualizado y compatible con Python 3.14+                   ║
+║                                                                          ║
+║  Ejecuta: python test_imap_simple.py                                    ║
+╚══════════════════════════════════════════════════════════════════════════╝

@@ -1,0 +1,358 @@
+{
+  "name": "Detección de OC Recibidas",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 2
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Cada 2 Minutos",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "format": "simple",
+        "filters": {
+          "customEmailConfig": "seen:false to:oc@kontroltravel.com"
+        },
+        "options": {
+          "attachmentsPrefix": "oc_",
+          "downloadAttachments": true
+        }
+      },
+      "id": "read-oc-emails",
+      "name": "Leer Correos OC",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [450, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4",
+          "name": "Gmail OC Inbox OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.attachments.length }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "has-attachments",
+      "name": "Tiene Adjuntos?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Buscar ID de reserva o LOC en el asunto y cuerpo del correo\nconst subject = $input.item.json.subject || '';\nconst body = $input.item.json.text || '';\nconst from = $input.item.json.from || '';\n\nconst searchText = `${subject} ${body}`;\n\n// Buscar patrones de ID de reserva\nconst idMatch = searchText.match(/ID[:\\s]*(\\d+)/i);\nconst locMatch = searchText.match(/LOC[:\\s]+([A-Z0-9]+)/i);\n\nlet idReserva = null;\nlet locInterno = null;\n\nif (idMatch) {\n  idReserva = idMatch[1];\n}\n\nif (locMatch) {\n  locInterno = locMatch[1];\n}\n\nreturn {\n  json: {\n    ...$ input.item.json,\n    id_reserva_encontrado: idReserva,\n    loc_interno_encontrado: locInterno,\n    busqueda_texto: searchText.substring(0, 200)\n  }\n};"
+      },
+      "id": "extract-reservation-info",
+      "name": "Extraer Info de Reserva",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, id_reserva, loc_interno, agencia, nombre_hotel, fecha_checkin\nFROM reservas\nWHERE \n  estado_oc = 'PENDIENTE'\n  AND requiere_oc = true\n  AND (\n    id_reserva = '{{ $json.id_reserva_encontrado }}'\n    OR loc_interno = '{{ $json.loc_interno_encontrado }}'\n  )\nLIMIT 1;",
+        "options": {}
+      },
+      "id": "find-reservation",
+      "name": "Buscar Reserva",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1050, 200],
+      "credentials": {
+        "postgres": {
+          "id": "2",
+          "name": "PostgreSQL Reservas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.id }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "reservation-found",
+      "name": "Reserva Encontrada?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": []
+        },
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "id": "split-attachments",
+      "name": "Dividir Adjuntos OC",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 2.1,
+      "position": [1450, 100]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.attachment.mimeType }}",
+              "operation": "equals",
+              "value2": "application/pdf"
+            }
+          ]
+        }
+      },
+      "id": "is-pdf",
+      "name": "Es PDF?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1650, 100]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO ordenes_compra (\n  reserva_id,\n  email_remitente,\n  email_asunto,\n  email_fecha,\n  email_id,\n  archivo_nombre,\n  archivo_tamano,\n  archivo_ruta,\n  fecha_recepcion\n) VALUES (\n  {{ $json.id }},\n  '{{ $json.from }}',\n  '{{ $json.subject }}',\n  '{{ $json.date }}',\n  '{{ $json.uid }}',\n  '{{ $json.attachment.fileName }}',\n  {{ $json.attachment.size }},\n  '/oc_files/{{ $json.id_reserva }}_{{ $json.attachment.fileName }}',\n  NOW()\n)\nON CONFLICT (reserva_id) DO NOTHING\nRETURNING id;",
+        "options": {}
+      },
+      "id": "insert-oc",
+      "name": "Registrar OC",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1850, 50],
+      "credentials": {
+        "postgres": {
+          "id": "2",
+          "name": "PostgreSQL Reservas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE reservas\nSET estado_oc = 'RECIBIDA',\n    fecha_oc_recibida = NOW()\nWHERE id = {{ $json.id }};",
+        "options": {}
+      },
+      "id": "update-status",
+      "name": "Actualizar Estado a RECIBIDA",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [2050, 50],
+      "credentials": {
+        "postgres": {
+          "id": "2",
+          "name": "PostgreSQL Reservas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Construir correo de confirmación\nconst reserva = $input.item.json;\n\nconst html = `\n<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 30px; text-align: center; }\n    .content { background: #f9f9f9; padding: 30px; }\n    .success-box { background: #d4edda; border: 2px solid #28a745; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }\n    .info-box { background: white; border-left: 4px solid #28a745; padding: 15px; margin: 20px 0; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>✅ OC Recibida Exitosamente</h1>\n      <p>Su reserva está confirmada</p>\n    </div>\n    \n    <div class=\"content\">\n      <p>Estimado/a,</p>\n      \n      <div class=\"success-box\">\n        <h2>🎉 ¡Excelente!</h2>\n        <p>Hemos recibido y registrado su Orden de Compra</p>\n      </div>\n      \n      <p>Los detalles de su reserva confirmada son:</p>\n      \n      <div class=\"info-box\">\n        <h3>📌 Reserva Confirmada</h3>\n        <p><strong>ID:</strong> ${reserva.id_reserva}</p>\n        <p><strong>LOC Interno:</strong> ${reserva.loc_interno}</p>\n        <p><strong>Agencia:</strong> ${reserva.agencia}</p>\n        <p><strong>Hotel:</strong> ${reserva.nombre_hotel}</p>\n        <p><strong>Check-in:</strong> ${reserva.fecha_checkin}</p>\n        <p><strong>Estado:</strong> ✅ OC RECIBIDA - CONFIRMADA</p>\n      </div>\n      \n      <p>No recibirá más recordatorios sobre esta reserva. Todo está en orden.</p>\n      \n      <p>¡Gracias por su pronta respuesta!</p>\n      \n      <p>Saludos cordiales,<br>\n      <strong>Equipo Kontrol Travel</strong></p>\n    </div>\n  </div>\n</body>\n</html>\n`;\n\nreturn {\n  json: {\n    ...reserva,\n    email_html: html,\n    email_subject: `✅ OC Recibida - Reserva ${reserva.id_reserva} Confirmada`,\n    email_to: reserva.from\n  }\n};"
+      },
+      "id": "build-confirmation",
+      "name": "Construir Confirmación",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2250, 50]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "sendTo": "={{ $json.email_to }}",
+        "subject": "={{ $json.email_subject }}",
+        "emailType": "html",
+        "message": "={{ $json.email_html }}",
+        "options": {}
+      },
+      "id": "send-confirmation",
+      "name": "Enviar Confirmación",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [2450, 50],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3",
+          "name": "Gmail SMTP OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "={{ '/oc_files/' + $json.id_reserva + '_' + $json.attachment.fileName }}",
+        "binaryData": true,
+        "options": {}
+      },
+      "id": "save-oc-file",
+      "name": "Guardar Archivo OC",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [1850, 200]
+    }
+  ],
+  "connections": {
+    "Cada 2 Minutos": {
+      "main": [
+        [
+          {
+            "node": "Leer Correos OC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Correos OC": {
+      "main": [
+        [
+          {
+            "node": "Tiene Adjuntos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiene Adjuntos?": {
+      "main": [
+        [
+          {
+            "node": "Extraer Info de Reserva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Info de Reserva": {
+      "main": [
+        [
+          {
+            "node": "Buscar Reserva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Reserva": {
+      "main": [
+        [
+          {
+            "node": "Reserva Encontrada?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reserva Encontrada?": {
+      "main": [
+        [
+          {
+            "node": "Dividir Adjuntos OC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dividir Adjuntos OC": {
+      "main": [
+        [
+          {
+            "node": "Es PDF?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es PDF?": {
+      "main": [
+        [
+          {
+            "node": "Registrar OC",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Guardar Archivo OC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar OC": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Estado a RECIBIDA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar Estado a RECIBIDA": {
+      "main": [
+        [
+          {
+            "node": "Construir Confirmación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir Confirmación": {
+      "main": [
+        [
+          {
+            "node": "Enviar Confirmación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-11-13T00:00:00.000Z",
+  "versionId": "1"
+}

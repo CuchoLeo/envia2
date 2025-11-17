@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URGENTE - Ultimátum Orden de Compra</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border: 3px solid #dc3545;
+        }
+        .header {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin: -30px -30px 30px -30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .urgent-banner {
+            background-color: #dc3545;
+            color: white;
+            padding: 20px;
+            border-radius: 4px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .reservation-details {
+            background-color: #fff5f5;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f8d7da;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .detail-value {
+            color: #212529;
+        }
+        .critical-box {
+            background-color: #f8d7da;
+            border: 3px solid #dc3545;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+            color: #721c24;
+        }
+        .critical-box h3 {
+            margin-top: 0;
+            color: #dc3545;
+            font-size: 20px;
+        }
+        .critical-box ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .critical-box li {
+            margin: 8px 0;
+            font-weight: 600;
+        }
+        .deadline {
+            background-color: #dc3545;
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+            margin: 20px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .contact-info {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            border: 2px solid #ffc107;
+        }
+        .timeline {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .timeline-item {
+            padding: 8px 0;
+            font-size: 14px;
+        }
+        .timeline-item.current {
+            color: #dc3545;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 URGENTE - Ultimátum Orden de Compra</h1>
+        </div>
+
+        <div class="urgent-banner">
+            ⚠️ ÚLTIMA NOTIFICACIÓN ANTES DE SUSPENSIÓN DE SERVICIO ⚠️
+        </div>
+
+        <p>Estimado equipo de <strong>{{ agencia }}</strong>,</p>
+
+        <p style="font-weight: 600; color: #721c24;">Le informamos con carácter de <strong>URGENTE</strong> que, tras múltiples solicitudes, aún no hemos recibido la Orden de Compra (OC) correspondiente a la siguiente reserva:</p>
+
+        <div class="reservation-details">
+            <h3 style="margin-top: 0; color: #dc3545;">Detalles de la Reserva</h3>
+
+            <div class="detail-row">
+                <span class="detail-label">ID de Reserva:</span>
+                <span class="detail-value"><strong style="color: #dc3545;">{{ id_reserva }}</strong></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">LOC Interno:</span>
+                <span class="detail-value"><strong>{{ loc_interno }}</strong></span>
+            </div>
+
+            {% if localizador %}
+            <div class="detail-row">
+                <span class="detail-label">Localizador:</span>
+                <span class="detail-value">{{ localizador }}</span>
+            </div>
+            {% endif %}
+
+            <div class="detail-row">
+                <span class="detail-label">Hotel:</span>
+                <span class="detail-value">{{ nombre_hotel }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Check-in:</span>
+                <span class="detail-value"><strong style="color: #dc3545;">{{ fecha_checkin }}</strong></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Check-out:</span>
+                <span class="detail-value">{{ fecha_checkout }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Monto Total:</span>
+                <span class="detail-value"><strong style="color: #dc3545; font-size: 18px;">{{ moneda }} {{ monto_total }}</strong></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Días desde solicitud inicial:</span>
+                <span class="detail-value"><strong style="color: #dc3545; font-size: 16px;">{{ dias_desde_creacion }} días</strong></span>
+            </div>
+        </div>
+
+        <div class="critical-box">
+            <h3>⚠️ CONSECUENCIAS INMEDIATAS</h3>
+            <p>Si no recibimos la Orden de Compra al día hábil siguiente, procederemos con las siguientes acciones:</p>
+            <ul>
+                <li>🚫 <strong>SUSPENSIÓN INMEDIATA</strong> de la reserva</li>
+                <li>📞 Notificación al hotel para <strong>CANCELACIÓN del servicio</strong></li>
+                <li>💰 Aplicación de penalidades según políticas del hotel</li>
+                <li>📋 Reporte de incumplimiento administrativo</li>
+                <li>⚖️ Posibles cargos por cancelación tardía</li>
+            </ul>
+        </div>
+
+        <div class="deadline">
+            ⏰ PLAZO LÍMITE: MAÑANA (DÍA HÁBIL SIGUIENTE)
+        </div>
+
+        <div class="timeline">
+            <h4 style="margin-top: 0;">📅 Historial de Comunicaciones</h4>
+            <div class="timeline-item">✅ <strong>Día 0:</strong> Solicitud inicial enviada</div>
+            <div class="timeline-item">📧 <strong>Día 2:</strong> Recordatorio amable</div>
+            <div class="timeline-item current">🚨 <strong>Día 4 (HOY):</strong> Ultimátum - Última oportunidad</div>
+            <div class="timeline-item" style="color: #dc3545; font-weight: 700;">❌ <strong>Día 5:</strong> Suspensión del servicio si no se recibe OC</div>
+        </div>
+
+        <div class="contact-info">
+            <h4 style="margin-top: 0; color: #856404;">📧 ENVÍO INMEDIATO DE LA ORDEN DE COMPRA</h4>
+            <p style="margin: 5px 0;"><strong>Envíe URGENTEMENTE la OC en formato PDF a:</strong></p>
+            <p style="margin: 5px 0; font-size: 16px;"><strong style="color: #dc3545;">{{ email_oc }}</strong></p>
+            <p style="margin: 5px 0; font-size: 13px;">
+                <strong>Asunto obligatorio:</strong> ID {{ id_reserva }} - LOC {{ loc_interno }} - OC URGENTE
+            </p>
+        </div>
+
+        <div style="background-color: #d1ecf1; border-left: 4px solid #0c5460; padding: 15px; border-radius: 4px; margin: 20px 0; color: #0c5460;">
+            <strong>ℹ️ Consultas Urgentes:</strong><br>
+            Si tiene algún inconveniente o requiere asistencia inmediata, contáctenos por teléfono al <strong>+56 2 XXXX XXXX</strong> o responda directamente a <strong>{{ email_remitente }}</strong>
+        </div>
+
+        <p style="font-weight: 600; color: #721c24;">Esta es nuestra última comunicación antes de proceder con la suspensión del servicio. Agradecemos su comprensión y colaboración urgente en este asunto.</p>
+
+        <div class="footer">
+            <p><strong>Kontrol Travel - Administración</strong></p>
+            <p>📧 {{ email_remitente }}<br>
+            📞 Teléfono: +56 2 XXXX XXXX<br>
+            🕐 Horario de atención: Lunes a Viernes, 9:00 - 18:00 hrs</p>
+            <p style="font-size: 12px; color: #dc3545; margin-top: 15px; font-weight: 600;">
+                NOTIFICACIÓN CRÍTICA - REQUIERE ACCIÓN INMEDIATA
+            </p>
+        </div>
+    </div>
+</body>
+</html>

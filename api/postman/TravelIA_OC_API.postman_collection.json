@@ -1,0 +1,175 @@
+{
+	"info": {
+		"name": "TravelIA - Sistema de OC",
+		"description": "API para gestión de órdenes de compra de reservas hoteleras",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/health",
+					"host": ["{{base_url}}"],
+					"path": ["api", "health"]
+				},
+				"description": "Verifica el estado del sistema"
+			}
+		},
+		{
+			"name": "Estadísticas del Sistema",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/stats",
+					"host": ["{{base_url}}"],
+					"path": ["api", "stats"]
+				},
+				"description": "Obtiene estadísticas generales del sistema"
+			}
+		},
+		{
+			"name": "Listar Reservas",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/reservas?estado_oc=pendiente&skip=0&limit=100",
+					"host": ["{{base_url}}"],
+					"path": ["api", "reservas"],
+					"query": [
+						{
+							"key": "estado_oc",
+							"value": "pendiente",
+							"description": "Filtrar por estado: pendiente, recibida, expirada"
+						},
+						{
+							"key": "skip",
+							"value": "0"
+						},
+						{
+							"key": "limit",
+							"value": "100"
+						}
+					]
+				},
+				"description": "Lista todas las reservas con filtros opcionales"
+			}
+		},
+		{
+			"name": "Obtener Reserva por ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/reservas/1",
+					"host": ["{{base_url}}"],
+					"path": ["api", "reservas", "1"]
+				},
+				"description": "Obtiene los detalles completos de una reserva"
+			}
+		},
+		{
+			"name": "Marcar OC como Recibida",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"numero_oc\": \"OC-2024-001\",\n  \"observaciones\": \"OC recibida y validada\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/reservas/1/marcar-oc-recibida",
+					"host": ["{{base_url}}"],
+					"path": ["api", "reservas", "1", "marcar-oc-recibida"]
+				},
+				"description": "Marca manualmente una OC como recibida"
+			}
+		},
+		{
+			"name": "Reenviar Correo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"tipo_correo\": \"solicitud_inicial\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/reservas/1/reenviar-correo",
+					"host": ["{{base_url}}"],
+					"path": ["api", "reservas", "1", "reenviar-correo"]
+				},
+				"description": "Reenvía un correo (solicitud_inicial, recordatorio_1, recordatorio_2, ultimatum)"
+			}
+		},
+		{
+			"name": "Listar Clientes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/clientes",
+					"host": ["{{base_url}}"],
+					"path": ["api", "clientes"]
+				},
+				"description": "Lista todos los clientes configurados"
+			}
+		},
+		{
+			"name": "Crear Cliente",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"nombre_agencia\": \"NUEVA AGENCIA S.A.\",\n  \"email_contacto\": \"contacto@nueva-agencia.com\",\n  \"telefono_contacto\": \"+56912345678\",\n  \"requiere_oc\": true,\n  \"dias_recordatorio_1\": 3,\n  \"dias_recordatorio_2\": 5,\n  \"notas\": \"Cliente nuevo\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/clientes",
+					"host": ["{{base_url}}"],
+					"path": ["api", "clientes"]
+				},
+				"description": "Crea un nuevo cliente/agencia"
+			}
+		},
+		{
+			"name": "Procesar Ahora (Forzar)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/process-now",
+					"host": ["{{base_url}}"],
+					"path": ["api", "process-now"]
+				},
+				"description": "Fuerza el procesamiento inmediato de correos pendientes"
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8001",
+			"type": "string"
+		}
+	]
+}

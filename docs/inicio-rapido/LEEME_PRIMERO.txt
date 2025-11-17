@@ -1,0 +1,145 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   📋 SISTEMA DE SEGUIMIENTO DE ÓRDENES DE COMPRA                        ║
+║   Sistema automatizado para gestión de OC en reservas hoteleras         ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+🚀 INICIO RÁPIDO
+═══════════════════════════════════════════════════════════════════════════
+
+1️⃣  LEER PRIMERO:
+    📄 INICIO_RAPIDO.md       ← Guía de 10 minutos para empezar
+    📄 GUIA_PRUEBA_LOCAL.md   ← Guía completa de pruebas con Gmail
+
+2️⃣  INSTALAR:
+    ./setup.sh                ← Instalación automática
+    nano .env                 ← Configurar credenciales Gmail
+
+3️⃣  PROBAR:
+    python app.py             ← Iniciar sistema
+    http://localhost:8001     ← Abrir dashboard
+
+4️⃣  ENVIAR PRUEBAS:
+    python enviar_prueba.py   ← Enviar correos de prueba
+
+
+📚 DOCUMENTACIÓN
+═══════════════════════════════════════════════════════════════════════════
+
+README.md                   - Documentación completa del sistema
+INICIO_RAPIDO.md           - Guía rápida (10 minutos)
+GUIA_PRUEBA_LOCAL.md       - Guía detallada de pruebas con Gmail
+
+
+🔧 SCRIPTS ÚTILES
+═══════════════════════════════════════════════════════════════════════════
+
+setup.sh                    - Instalación automatizada
+verify_install.py          - Verificar instalación
+test_pdf.py                - Probar extracción de PDF
+enviar_prueba.py           - Enviar correos de prueba
+config.py                  - Verificar configuración
+database.py                - Inicializar base de datos
+
+
+⚙️  CONFIGURACIÓN MÍNIMA (.env)
+═══════════════════════════════════════════════════════════════════════════
+
+IMAP_USERNAME=cuenta1@gmail.com       # Recibe confirmaciones
+IMAP_PASSWORD=abcdefghijklmnop        # Contraseña de aplicación
+
+SMTP_USERNAME=cuenta2@gmail.com       # Envía solicitudes
+SMTP_PASSWORD=wxyzabcdefghijkl        # Contraseña de aplicación
+
+OC_INBOX_USERNAME=cuenta1@gmail.com   # Recibe OC
+OC_INBOX_PASSWORD=abcdefghijklmnop
+
+AGENCIES_REQUIRING_OC=WALVIS S.A.     # Clientes que requieren OC
+
+
+🎯 FLUJO DEL SISTEMA
+═══════════════════════════════════════════════════════════════════════════
+
+1. Cliente hace reserva → HotelSales envía PDF por correo
+2. Sistema detecta correo → Extrae datos del PDF
+3. Verifica si cliente requiere OC → Crea registro
+4. Envía solicitud automática → DÍA 0
+5. Si no responde → Recordatorio DÍA 2
+6. Si no responde → Ultimátum DÍA 4
+7. Cliente envía OC → Sistema detecta y marca como recibida
+8. Detiene recordatorios → Proceso completo
+
+
+📧 CORREOS DE PRUEBA
+═══════════════════════════════════════════════════════════════════════════
+
+Enviar a: cuenta1@gmail.com (tu casilla de monitoreo)
+
+CONFIRMACIÓN DE RESERVA:
+  Asunto: Confirmación de Reserva Hotel
+  Adjunto: resumen del servicio.pdf
+
+ORDEN DE COMPRA:
+  Asunto: OC para Reserva ID 45215412
+  Adjunto: Cualquier PDF
+
+
+🌐 INTERFAZ WEB
+═══════════════════════════════════════════════════════════════════════════
+
+Dashboard:  http://localhost:8001
+API REST:   http://localhost:8001/api/stats
+Docs API:   http://localhost:8001/docs
+
+
+📊 API REST ÚTIL
+═══════════════════════════════════════════════════════════════════════════
+
+curl http://localhost:8001/api/health        # Health check
+curl http://localhost:8001/api/stats         # Estadísticas
+curl http://localhost:8001/api/reservas      # Listar reservas
+
+
+🐛 DEPURACIÓN
+═══════════════════════════════════════════════════════════════════════════
+
+Ver logs:
+  tail -f logs/oc_seguimiento_*.log
+
+Verificar instalación:
+  python verify_install.py
+
+Probar configuración:
+  python config.py
+
+Probar PDF:
+  python test_pdf.py "resumen del servicio.pdf"
+
+
+💡 TIPS IMPORTANTES
+═══════════════════════════════════════════════════════════════════════════
+
+✓ Usa CONTRASEÑAS DE APLICACIÓN de Gmail, no tu contraseña normal
+✓ Activa "Verificación en 2 pasos" en Gmail primero
+✓ El nombre de agencia debe coincidir EXACTAMENTE con el PDF
+✓ Para pruebas rápidas: DAYS_FOR_REMINDER_1=0 y DAYS_FOR_REMINDER_2=0
+✓ El sistema verifica correos cada 60 segundos por defecto
+
+
+❓ AYUDA
+═══════════════════════════════════════════════════════════════════════════
+
+1. Lee INICIO_RAPIDO.md para comenzar
+2. Lee GUIA_PRUEBA_LOCAL.md para guía detallada
+3. Lee README.md para documentación completa
+4. Revisa logs/ para depurar problemas
+
+
+╔══════════════════════════════════════════════════════════════════════════╗
+║  🎉 ¡Listo para empezar!                                                 ║
+║                                                                          ║
+║  Ejecuta: ./setup.sh                                                     ║
+║  Luego:   python app.py                                                  ║
+║  Abre:    http://localhost:8001                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝

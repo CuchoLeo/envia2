@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ settings.app_name }} - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card.pending .value { color: #ffc107; }
+        .stat-card.received .value { color: #28a745; }
+        .stat-card.expired .value { color: #dc3545; }
+        .stat-card.critical .value { color: #fd7e14; }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .badge.received {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .badge.expired {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .actions {
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #5568d3;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
+        }
+
+        .api-links {
+            margin-top: 20px;
+        }
+
+        .api-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: 600;
+        }
+
+        .api-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 {{ settings.app_name }}</h1>
+            <p>Sistema automatizado de seguimiento de órdenes de compra - v{{ settings.app_version }}</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card pending">
+                <h3>OC Pendientes</h3>
+                <div class="value">{{ stats.oc_pendientes }}</div>
+                <p>Esperando respuesta</p>
+            </div>
+
+            <div class="stat-card received">
+                <h3>OC Recibidas</h3>
+                <div class="value">{{ stats.oc_recibidas }}</div>
+                <p>Completadas</p>
+            </div>
+
+            <div class="stat-card critical">
+                <h3>Críticas (>4 días)</h3>
+                <div class="value">{{ stats.criticas }}</div>
+                <p>Requieren atención</p>
+            </div>
+
+            <div class="stat-card expired">
+                <h3>Expiradas</h3>
+                <div class="value">{{ stats.oc_expiradas }}</div>
+                <p>Check-in pasado</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔔 Reservas Pendientes de OC</h2>
+
+            {% if reservas_pendientes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Reserva</th>
+                        <th>LOC Interno</th>
+                        <th>Agencia</th>
+                        <th>Hotel</th>
+                        <th>Check-in</th>
+                        <th>Monto</th>
+                        <th>Días</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reserva in reservas_pendientes %}
+                    <tr>
+                        <td><strong>{{ reserva.id_reserva }}</strong></td>
+                        <td>{{ reserva.loc_interno }}</td>
+                        <td>{{ reserva.agencia }}</td>
+                        <td>{{ reserva.nombre_hotel or 'N/A' }}</td>
+                        <td>{{ reserva.fecha_checkin.strftime('%d/%m/%Y') if reserva.fecha_checkin else 'N/A' }}</td>
+                        <td>{{ reserva.moneda }} {{ "{:,.0f}".format(reserva.monto_total) }}</td>
+                        <td>
+                            <strong style="color: {% if reserva.dias_desde_creacion >= 4 %}#dc3545{% elif reserva.dias_desde_creacion >= 2 %}#ffc107{% else %}#28a745{% endif %}">
+                                {{ reserva.dias_desde_creacion }}
+                            </strong>
+                        </td>
+                        <td>
+                            <span class="badge pending">Pendiente</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color: #6c757d; text-align: center; padding: 40px;">
+                ✅ No hay reservas pendientes de OC en este momento
+            </p>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <h2>✅ Órdenes de Compra Recibidas Recientemente</h2>
+
+            {% if oc_recientes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reserva</th>
+                        <th>Agencia</th>
+                        <th>Número OC</th>
+                        <th>Fecha Recepción</th>
+                        <th>Remitente</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for oc in oc_recientes %}
+                    <tr>
+                        <td><strong>{{ oc.reserva.id_reserva }}</strong></td>
+                        <td>{{ oc.reserva.agencia }}</td>
+                        <td>{{ oc.numero_oc or 'N/A' }}</td>
+                        <td>{{ oc.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ oc.email_remitente }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color: #6c757d; text-align: center; padding: 40px;">
+                No hay órdenes de compra recibidas aún
+            </p>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <h2>🔌 API REST</h2>
+            <p style="margin-bottom: 15px;">Accede a los datos mediante la API REST:</p>
+
+            <div class="api-links">
+                <a href="/api/health" target="_blank">📊 Health Check</a>
+                <a href="/api/stats" target="_blank">📈 Estadísticas</a>
+                <a href="/api/reservas" target="_blank">📋 Listar Reservas</a>
+                <a href="/api/clientes" target="_blank">👥 Clientes</a>
+                <a href="/docs" target="_blank">📚 Documentación API</a>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" onclick="procesarAhora()">
+                    🔄 Procesar Correos Ahora
+                </button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 {{ settings.app_name }}</p>
+            <p>Entorno: {{ settings.environment }} | Puerto: {{ settings.web_port }}</p>
+        </div>
+    </div>
+
+    <script>
+        async function procesarAhora() {
+            if (!confirm('¿Desea forzar el procesamiento de correos pendientes?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/process-now', {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    alert('✅ Procesamiento ejecutado exitosamente');
+                    location.reload();
+                } else {
+                    alert('❌ Error al procesar correos');
+                }
+            } catch (error) {
+                alert('❌ Error de conexión: ' + error.message);
+            }
+        }
+
+        // Auto-refresh cada 30 segundos
+        setInterval(() => {
+            location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

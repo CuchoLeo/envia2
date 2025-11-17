@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recordatorio - Orden de Compra Pendiente</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin: -30px -30px 30px -30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .reservation-details {
+            background-color: #f8f9fa;
+            border-left: 4px solid #f5576c;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .detail-value {
+            color: #212529;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .warning-box strong {
+            color: #856404;
+        }
+        .urgent {
+            background-color: #f8d7da;
+            border: 2px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            color: #721c24;
+        }
+        .urgent h3 {
+            margin-top: 0;
+            color: #721c24;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .contact-info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .timeline {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .timeline-item {
+            padding: 8px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⏰ Recordatorio - OC Pendiente</h1>
+        </div>
+
+        <p>Estimado equipo de <strong>{{ agencia }}</strong>,</p>
+
+        <p>Le escribimos para recordarle amablemente que aún no hemos recibido la <strong>Orden de Compra (OC)</strong> correspondiente a la siguiente reserva:</p>
+
+        <div class="reservation-details">
+            <h3 style="margin-top: 0; color: #f5576c;">Detalles de la Reserva</h3>
+
+            <div class="detail-row">
+                <span class="detail-label">ID de Reserva:</span>
+                <span class="detail-value"><strong>{{ id_reserva }}</strong></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">LOC Interno:</span>
+                <span class="detail-value">{{ loc_interno }}</span>
+            </div>
+
+            {% if localizador %}
+            <div class="detail-row">
+                <span class="detail-label">Localizador:</span>
+                <span class="detail-value">{{ localizador }}</span>
+            </div>
+            {% endif %}
+
+            <div class="detail-row">
+                <span class="detail-label">Hotel:</span>
+                <span class="detail-value">{{ nombre_hotel }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Check-in:</span>
+                <span class="detail-value">{{ fecha_checkin }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Check-out:</span>
+                <span class="detail-value">{{ fecha_checkout }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Monto Total:</span>
+                <span class="detail-value"><strong style="color: #f5576c; font-size: 18px;">{{ moneda }} {{ monto_total }}</strong></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Días desde solicitud:</span>
+                <span class="detail-value"><strong style="color: #dc3545;">{{ dias_desde_creacion }} días</strong></span>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <strong>⚠️ Importante:</strong> Para mantener la reserva activa y garantizar el servicio, necesitamos recibir la OC a la brevedad.
+        </div>
+
+        <div class="timeline">
+            <h4 style="margin-top: 0;">📅 Línea de Tiempo</h4>
+            <div class="timeline-item">✅ <strong>Día 0:</strong> Solicitud inicial enviada</div>
+            <div class="timeline-item">📍 <strong>Día 2:</strong> Recordatorio (hoy)</div>
+            <div class="timeline-item">⚠️ <strong>Día 4:</strong> Último aviso antes de suspensión</div>
+        </div>
+
+        <div class="contact-info">
+            <h4 style="margin-top: 0;">📧 Envío de la Orden de Compra</h4>
+            <p style="margin: 5px 0;">Por favor, envíe la OC en formato PDF a:</p>
+            <p style="margin: 5px 0;"><strong>{{ email_oc }}</strong></p>
+            <p style="margin: 5px 0; font-size: 13px; color: #6c757d;">
+                En el asunto, incluya: <strong>ID {{ id_reserva }}</strong> o <strong>LOC {{ loc_interno }}</strong>
+            </p>
+        </div>
+
+        <p>Si ya envió la OC y este recordatorio se cruzó, por favor ignore este mensaje. Si tiene alguna consulta o necesita asistencia, contáctenos inmediatamente.</p>
+
+        <div class="footer">
+            <p><strong>Kontrol Travel - Administración</strong></p>
+            <p>📧 {{ email_remitente }}<br>
+            📞 Teléfono: +56 2 XXXX XXXX</p>
+            <p style="font-size: 12px; color: #adb5bd; margin-top: 15px;">
+                Este es un correo automático de recordatorio. Si ya cumplió con el envío, por favor ignore este mensaje.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

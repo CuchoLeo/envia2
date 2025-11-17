@@ -1,0 +1,222 @@
+{
+  "name": "Recordatorios de OC Pendientes",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Cada 6 Horas",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  r.*,\n  EXTRACT(DAY FROM (NOW() - r.fecha_creacion)) as dias_desde_creacion,\n  ce.tipo_correo as ultimo_correo_enviado\nFROM reservas r\nLEFT JOIN LATERAL (\n  SELECT tipo_correo \n  FROM correos_enviados \n  WHERE reserva_id = r.id \n  ORDER BY fecha_envio DESC \n  LIMIT 1\n) ce ON true\nWHERE \n  r.requiere_oc = true \n  AND r.estado_oc = 'PENDIENTE'\n  AND r.fecha_checkin > NOW()\nORDER BY r.fecha_creacion ASC;",
+        "options": {}
+      },
+      "id": "get-pending-oc",
+      "name": "Obtener OC Pendientes",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [450, 300],
+      "credentials": {
+        "postgres": {
+          "id": "2",
+          "name": "PostgreSQL Reservas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Determinar qué tipo de correo enviar según días transcurridos\nconst items = $input.all();\nconst output = [];\n\nfor (const item of items) {\n  const dias = parseInt(item.json.dias_desde_creacion);\n  const ultimoCorreo = item.json.ultimo_correo_enviado;\n  \n  let tipoCorreo = null;\n  \n  // Día 2: Recordatorio (solo si ya se envió solicitud inicial)\n  if (dias >= 2 && dias < 4 && ultimoCorreo === 'SOLICITUD_INICIAL') {\n    tipoCorreo = 'RECORDATORIO_DIA2';\n  }\n  // Día 4: Ultimátum (solo si ya se envió recordatorio día 2)\n  else if (dias >= 4 && ultimoCorreo === 'RECORDATORIO_DIA2') {\n    tipoCorreo = 'ULTIMATUM_DIA4';\n  }\n  \n  if (tipoCorreo) {\n    output.push({\n      json: {\n        ...item.json,\n        tipo_correo_enviar: tipoCorreo\n      }\n    });\n  }\n}\n\nreturn output;"
+      },
+      "id": "determine-email-type",
+      "name": "Determinar Tipo de Correo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Construir el correo según el tipo\nconst reserva = $input.item.json;\nconst tipoCorreo = reserva.tipo_correo_enviar;\n\nlet html = '';\nlet subject = '';\n\nif (tipoCorreo === 'RECORDATORIO_DIA2') {\n  subject = `Recordatorio OC - Reserva ${reserva.id_reserva} - ${reserva.agencia}`;\n  html = `\n<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px; text-align: center; }\n    .content { background: #f9f9f9; padding: 30px; }\n    .info-box { background: white; border-left: 4px solid #f5576c; padding: 15px; margin: 20px 0; }\n    .timeline { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; }\n    .timeline-item { padding: 10px; border-left: 3px solid #ddd; margin-left: 20px; }\n    .timeline-item.active { border-left-color: #f5576c; }\n    .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>⏰ Recordatorio: Orden de Compra Pendiente</h1>\n      <p>Día 2 - Aún estamos esperando su OC</p>\n    </div>\n    \n    <div class=\"content\">\n      <p>Estimado/a,</p>\n      \n      <p>Le recordamos que hace 2 días solicitamos la Orden de Compra (OC) para la siguiente reserva:</p>\n      \n      <div class=\"info-box\">\n        <h3>📌 Detalles de la Reserva</h3>\n        <p><strong>ID:</strong> ${reserva.id_reserva}</p>\n        <p><strong>LOC Interno:</strong> ${reserva.loc_interno}</p>\n        <p><strong>Agencia:</strong> ${reserva.agencia}</p>\n        <p><strong>Hotel:</strong> ${reserva.nombre_hotel}</p>\n        <p><strong>Check-in:</strong> ${reserva.fecha_checkin}</p>\n        <p><strong>Monto:</strong> $${reserva.monto_total.toLocaleString()} ${reserva.moneda}</p>\n      </div>\n      \n      <div class=\"timeline\">\n        <h3>📅 Línea de Tiempo</h3>\n        <div class=\"timeline-item active\">✅ Día 0: Solicitud inicial enviada</div>\n        <div class=\"timeline-item active\">🔔 Día 2: Recordatorio (HOY)</div>\n        <div class=\"timeline-item\">⚠️ Día 4: Último aviso</div>\n      </div>\n      \n      <div class=\"warning\">\n        <strong>⚠️ Acción Requerida:</strong> Por favor envíe la OC a la brevedad para asegurar su reserva.\n      </div>\n      \n      <p>Puede responder a este correo o enviar la OC a: <strong>oc@kontroltravel.com</strong></p>\n      \n      <p>Quedamos atentos,<br>\n      <strong>Equipo Kontrol Travel</strong></p>\n    </div>\n  </div>\n</body>\n</html>\n  `;\n} else if (tipoCorreo === 'ULTIMATUM_DIA4') {\n  subject = `⚠️ URGENTE - OC Pendiente - Reserva ${reserva.id_reserva}`;\n  html = `\n<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%); color: white; padding: 30px; text-align: center; }\n    .content { background: #f9f9f9; padding: 30px; }\n    .alert { background: #ff4444; color: white; padding: 20px; margin: 20px 0; border-radius: 8px; text-align: center; }\n    .info-box { background: white; border-left: 4px solid #ff4444; padding: 15px; margin: 20px 0; }\n    .consequences { background: #fff; padding: 20px; margin: 20px 0; border: 2px solid #ff4444; border-radius: 8px; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>🚨 ÚLTIMO AVISO: OC Pendiente</h1>\n      <p>Día 4 - Acción Urgente Requerida</p>\n    </div>\n    \n    <div class=\"content\">\n      <p>Estimado/a,</p>\n      \n      <div class=\"alert\">\n        <h2>⚠️ SITUACIÓN CRÍTICA</h2>\n        <p>Han transcurrido 4 días sin recibir la Orden de Compra</p>\n      </div>\n      \n      <p>Esta es nuestra <strong>última comunicación</strong> solicitando la OC para la reserva:</p>\n      \n      <div class=\"info-box\">\n        <h3>📌 Detalles de la Reserva en Riesgo</h3>\n        <p><strong>ID:</strong> ${reserva.id_reserva}</p>\n        <p><strong>LOC Interno:</strong> ${reserva.loc_interno}</p>\n        <p><strong>Agencia:</strong> ${reserva.agencia}</p>\n        <p><strong>Hotel:</strong> ${reserva.nombre_hotel}</p>\n        <p><strong>Check-in:</strong> ${reserva.fecha_checkin}</p>\n        <p><strong>Monto:</strong> $${reserva.monto_total.toLocaleString()} ${reserva.moneda}</p>\n      </div>\n      \n      <div class=\"consequences\">\n        <h3>⚠️ Consecuencias de NO Enviar la OC:</h3>\n        <ul>\n          <li>🚫 Cancelación automática de la reserva en 24 horas</li>\n          <li>🚫 No se garantiza disponibilidad del hotel</li>\n          <li>🚫 Suspensión temporal de servicios futuros</li>\n          <li>🚫 Posibles cargos por cancelación tardía</li>\n        </ul>\n      </div>\n      \n      <div class=\"alert\">\n        <h3>📧 ENVÍE LA OC AHORA</h3>\n        <p>Email: <strong>oc@kontroltravel.com</strong></p>\n        <p>O responda a este correo</p>\n      </div>\n      \n      <p>Si ya envió la OC, por favor ignore este mensaje.</p>\n      \n      <p>Saludos cordiales,<br>\n      <strong>Equipo Kontrol Travel</strong></p>\n    </div>\n  </div>\n</body>\n</html>\n  `;\n}\n\nreturn {\n  json: {\n    ...reserva,\n    email_html: html,\n    email_subject: subject,\n    email_to: reserva.agencia  // En producción, esto debería ser el email del contacto de la agencia\n  }\n};"
+      },
+      "id": "build-reminder-email",
+      "name": "Construir Correo Recordatorio",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "sendTo": "={{ $json.email_to }}",
+        "subject": "={{ $json.email_subject }}",
+        "emailType": "html",
+        "message": "={{ $json.email_html }}",
+        "options": {}
+      },
+      "id": "send-reminder",
+      "name": "Enviar Recordatorio",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1050, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3",
+          "name": "Gmail SMTP OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO correos_enviados (\n  reserva_id,\n  tipo_correo,\n  destinatario,\n  asunto,\n  enviado_exitosamente,\n  fecha_envio\n) VALUES (\n  {{ $json.id }},\n  '{{ $json.tipo_correo_enviar }}',\n  '{{ $json.email_to }}',\n  '{{ $json.email_subject }}',\n  true,\n  NOW()\n);",
+        "options": {}
+      },
+      "id": "log-reminder",
+      "name": "Registrar Recordatorio",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1250, 300],
+      "credentials": {
+        "postgres": {
+          "id": "2",
+          "name": "PostgreSQL Reservas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.tipo_correo_enviar }}",
+              "operation": "equals",
+              "value2": "ULTIMATUM_DIA4"
+            }
+          ]
+        }
+      },
+      "id": "check-ultimatum",
+      "name": "Es Ultimátum?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE reservas \nSET estado_oc = 'EXPIRADA'\nWHERE id = {{ $json.id }}\n  AND EXTRACT(DAY FROM (NOW() - fecha_creacion)) > 5\n  AND estado_oc = 'PENDIENTE';",
+        "options": {}
+      },
+      "id": "mark-expired",
+      "name": "Marcar Como Expirada (Día 5+)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1650, 200],
+      "credentials": {
+        "postgres": {
+          "id": "2",
+          "name": "PostgreSQL Reservas"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cada 6 Horas": {
+      "main": [
+        [
+          {
+            "node": "Obtener OC Pendientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener OC Pendientes": {
+      "main": [
+        [
+          {
+            "node": "Determinar Tipo de Correo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Determinar Tipo de Correo": {
+      "main": [
+        [
+          {
+            "node": "Construir Correo Recordatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir Correo Recordatorio": {
+      "main": [
+        [
+          {
+            "node": "Enviar Recordatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Recordatorio": {
+      "main": [
+        [
+          {
+            "node": "Registrar Recordatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar Recordatorio": {
+      "main": [
+        [
+          {
+            "node": "Es Ultimátum?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es Ultimátum?": {
+      "main": [
+        [
+          {
+            "node": "Marcar Como Expirada (Día 5+)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-11-13T00:00:00.000Z",
+  "versionId": "1"
+}
