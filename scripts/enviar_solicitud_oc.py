@@ -12,11 +12,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from dotenv import load_dotenv
 from src.email_sender import email_sender
-from database import SessionLocal, Reserva
+from database import get_db, Reserva, init_db
 from datetime import datetime
 
 # Cargar configuración
 load_dotenv()
+
+# Inicializar base de datos
+init_db()
 
 # Colores para terminal
 class Colors:
@@ -38,7 +41,7 @@ def print_header():
 
 def listar_reservas():
     """Lista las reservas disponibles"""
-    db = SessionLocal()
+    db = next(get_db())
     try:
         reservas = db.query(Reserva).filter_by(requiere_oc=True).all()
 
@@ -61,7 +64,7 @@ def listar_reservas():
 
 def obtener_reserva(reserva_id: int):
     """Obtiene una reserva por ID"""
-    db = SessionLocal()
+    db = next(get_db())
     try:
         reserva = db.query(Reserva).filter_by(id=reserva_id).first()
         return reserva
@@ -89,7 +92,7 @@ def enviar_correo(reserva, tipo_correo: str):
     try:
         # Obtener email del cliente
         from database import ConfiguracionCliente
-        db = SessionLocal()
+        db = next(get_db())
         try:
             cliente = db.query(ConfiguracionCliente).filter_by(
                 nombre_agencia=reserva.agencia

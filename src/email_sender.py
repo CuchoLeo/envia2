@@ -31,7 +31,8 @@ class EmailSender:
         self.use_tls = settings.smtp_use_tls
 
         # Configurar Jinja2
-        templates_dir = Path(__file__).parent / "templates"
+        # Los templates están en el directorio raíz del proyecto, no en src/
+        templates_dir = Path(__file__).parent.parent / "templates"
         self.jinja_env = Environment(loader=FileSystemLoader(str(templates_dir)))
 
         self.logger = logger.bind(module="EmailSender")
@@ -272,6 +273,79 @@ class EmailSender:
 
         db.add(correo)
         db.commit()
+
+        return success
+
+    def enviar_solicitud_oc(
+        self,
+        reserva: Reserva,
+        tipo_correo: str,
+        destinatario: Optional[str] = None,
+        db: Optional[Session] = None
+    ) -> bool:
+        """
+        Método unificado para enviar correos de solicitud de OC
+
+        Args:
+            reserva: Objeto Reserva
+            tipo_correo: Tipo de correo a enviar (solicitud_inicial, recordatorio_1, recordatorio_2, ultimatum)
+            destinatario: Email del destinatario (opcional)
+            db: Sesión de base de datos (opcional, si no se proporciona no se registra en BD)
+
+        Returns:
+            True si se envió exitosamente
+        """
+        # Mapeo de tipos de correo a métodos
+        tipo_map = {
+            'solicitud_inicial': ('send_solicitud_inicial', TipoCorreo.SOLICITUD_INICIAL, 'solicitud_inicial.html'),
+            'recordatorio_1': ('send_recordatorio_dia2', TipoCorreo.RECORDATORIO_DIA_2, 'recordatorio_dia2.html'),
+            'recordatorio_2': ('send_ultimatum_dia4', TipoCorreo.ULTIMATUM_DIA_4, 'recordatorio_dia4.html'),
+            'ultimatum': ('send_ultimatum_dia4', TipoCorreo.ULTIMATUM_DIA_4, 'ultimatum_dia4.html')
+        }
+
+        if tipo_correo not in tipo_map:
+            self.logger.error(f"Tipo de correo no válido: {tipo_correo}")
+            return False
+
+        # Si se proporciona db, usar el método específico que registra en BD
+        if db:
+            method_name, _, _ = tipo_map[tipo_correo]
+            method = getattr(self, method_name)
+            return method(reserva=reserva, db=db, to_email=destinatario)
+
+        # Si no hay db, enviar sin registrar
+        _, tipo_enum, template_file = tipo_map[tipo_correo]
+
+        # Preparar contexto
+        context = self._prepare_context(reserva)
+
+        # Renderizar plantilla
+        html_body = self.render_template(template_file, context)
+
+        # Determinar destinatario
+        if not destinatario:
+            destinatario = "contacto@agencia.com"  # Placeholder
+
+        # Asunto según tipo
+        asuntos = {
+            'solicitud_inicial': f"Solicitud de Orden de Compra - Reserva {reserva.id_reserva}",
+            'recordatorio_1': f"Recordatorio - OC Pendiente - Reserva {reserva.id_reserva}",
+            'recordatorio_2': f"⚠️ URGENTE - Segunda Solicitud OC - Reserva {reserva.id_reserva}",
+            'ultimatum': f"🚨 URGENTE - Ultimátum OC - Reserva {reserva.id_reserva}"
+        }
+
+        subject = asuntos.get(tipo_correo, f"Solicitud OC - Reserva {reserva.id_reserva}")
+
+        # Enviar correo
+        success, error = self.send_email(
+            to_email=destinatario,
+            subject=subject,
+            html_body=html_body,
+            cc=settings.cc_recipients_list
+        )
+
+        if not success:
+            self.logger.error(f"Error enviando correo: {error}")
 
         return success
 
