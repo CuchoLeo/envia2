@@ -13,12 +13,12 @@ Para implementar el Sistema de Seguimiento de Órdenes de Compra necesitamos la 
 
 ---
 
-## 1. 📧 CUENTAS DE EMAIL
+## 1. 📧 CUENTAS DE GMAIL
 
 ### Opción A: Una sola cuenta (recomendado para empezar)
 
-⭐ **Email de Office 365:** _________________________________
-   (Ejemplo: administracion@kontroltravel.com)
+⭐ **Email de Gmail:** _________________________________
+   (Ejemplo: administracion.kontroltravel@gmail.com)
 
 **Esta cuenta se usará para:**
 - Recibir confirmaciones de reserva
@@ -27,62 +27,54 @@ Para implementar el Sistema de Seguimiento de Órdenes de Compra necesitamos la 
 
 ### Opción B: Cuentas separadas (opcional)
 
-📥 **Email para recibir confirmaciones:** _________________________________
-   (Ejemplo: reservas@kontroltravel.com)
+📥 **Email Gmail para recibir confirmaciones:** _________________________________
+   (Ejemplo: reservas.kontroltravel@gmail.com)
 
-📤 **Email para enviar solicitudes/recibir OC:** _________________________________
-   (Ejemplo: administracion@kontroltravel.com)
+📤 **Email Gmail para enviar solicitudes/recibir OC:** _________________________________
+   (Ejemplo: administracion.kontroltravel@gmail.com)
 
 ---
 
-## 2. 🔐 CONFIGURACIÓN DE OFFICE 365
+## 2. 🔐 CONTRASEÑAS DE APLICACIÓN DE GMAIL
 
 ### Pasos que el cliente debe seguir:
 
-**Para CADA email proporcionado:**
+**Para CADA email de Gmail proporcionado:**
 
-#### A. Verificar que IMAP está Habilitado
+#### A. Habilitar Verificación en 2 Pasos (si no está activa)
 
-**Opción 1: Usuario Final**
-1. Iniciar sesión en Outlook Web (https://outlook.office.com)
-2. Click en ⚙️ (Configuración) → "Ver toda la configuración"
-3. Buscar "Correo" → "Sincronizar correo electrónico"
-4. Verificar que IMAP esté habilitado
-5. Si no está habilitado, contactar al administrador de Office 365
+1. Ir a: https://myaccount.google.com/security
+2. En "Cómo accedes a Google", seleccionar "Verificación en 2 pasos"
+3. Seguir los pasos para activarla
+4. Verificar con teléfono o aplicación Google Authenticator
 
-**Opción 2: Administrador de Office 365** (Recomendado)
-1. Ir al Centro de Administración de Microsoft 365: https://admin.microsoft.com
-2. Usuarios → Usuarios activos
-3. Seleccionar el usuario
-4. Pestaña "Correo"
-5. "Administrar configuración de correo electrónico"
-6. Asegurarse que "IMAP" está habilitado
+#### B. Generar Contraseña de Aplicación
 
-#### B. Configurar Autenticación
+1. Ir a: https://myaccount.google.com/apppasswords
+2. Iniciar sesión si es necesario
+3. En "Seleccionar app", elegir "Correo"
+4. En "Seleccionar dispositivo", elegir "Otro (nombre personalizado)"
+5. Escribir: "Sistema OC Kontrol Travel"
+6. Click en "Generar"
+7. **IMPORTANTE:** Copiar la contraseña de 16 caracteres que aparece
+   - Aparece en formato: `xxxx xxxx xxxx xxxx`
+   - Copiar SIN espacios: `xxxxxxxxxxxxxxxx`
+8. Click en "Listo"
 
-**Si la cuenta tiene Autenticación Multifactor (MFA/2FA):**
+#### C. Guardar las Contraseñas
 
-1. Ir a: https://account.activedirectory.windowsazure.com/AppPasswords.aspx
-2. Click "Crear"
-3. Nombre: "Sistema OC Kontrol Travel"
-4. Copiar la contraseña generada (sin espacios)
+⭐ **Contraseña de aplicación Gmail 1:** ________________________________
+   (16 caracteres, sin espacios)
 
-⭐ **Contraseña de aplicación Email 1:** ________________________________
+⭐ **Contraseña de aplicación Gmail 2 (si aplica):** ________________________________
+   (16 caracteres, sin espacios)
 
-⭐ **Contraseña de aplicación Email 2 (si aplica):** ________________________________
-
-**Si la cuenta NO tiene MFA (más simple):**
-
-Usar la contraseña normal de la cuenta de Office 365.
-
-⭐ **Contraseña Email 1:** ________________________________
-
-⭐ **Contraseña Email 2 (si aplica):** ________________________________
-
-> ⚠️ **IMPORTANTE:**
-> - Si tienen MFA activo, DEBEN usar contraseñas de aplicación
-> - Si no tienen MFA, pueden usar la contraseña normal
-> - Guardar estas contraseñas en un lugar seguro
+> ⚠️ **MUY IMPORTANTE:**
+> - Gmail REQUIERE contraseñas de aplicación para acceso IMAP/SMTP
+> - NO usar la contraseña normal de Gmail
+> - Cada contraseña es única y no se puede recuperar después
+> - Guardar en un lugar seguro (administrador de contraseñas)
+> - Si la pierden, deben generar una nueva
 
 ---
 

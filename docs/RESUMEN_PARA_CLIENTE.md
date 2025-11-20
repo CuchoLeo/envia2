@@ -42,9 +42,9 @@ El sistema **automatiza completamente** el proceso de seguimiento de Órdenes de
 
 ### Información Mínima (15 minutos):
 
-1. **1-2 cuentas de Office 365** (Outlook) con:
-   - IMAP habilitado (consultar con admin de Office 365)
-   - Contraseña de la cuenta o contraseña de aplicación (si tienen MFA)
+1. **1-2 cuentas de Gmail** con:
+   - Verificación en 2 pasos habilitada
+   - Contraseñas de aplicación generadas (proceso automático de Google)
 
 2. **Lista de agencias que requieren OC** con emails
 

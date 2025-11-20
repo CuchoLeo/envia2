@@ -14,9 +14,9 @@ Validar el funcionamiento completo del sistema antes de pasar a producción.
 
 ## ✅ Pre-requisitos
 
-- [ ] 1-2 cuentas de Office 365 configuradas
-- [ ] Contraseñas (normales o de aplicación si tienen MFA) obtenidas
-- [ ] IMAP habilitado en Office 365 (verificado por administrador)
+- [ ] 1-2 cuentas de Gmail configuradas
+- [ ] Contraseñas de aplicación de Gmail generadas
+- [ ] Verificación en 2 pasos habilitada en Gmail
 - [ ] Información de agencias recopilada
 - [ ] 2-3 PDFs de confirmación reales del cliente
 

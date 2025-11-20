@@ -58,15 +58,15 @@ def configurar_correos():
 
     if una_cuenta:
         print(f"\n{Colors.BLUE}Usando una cuenta para IMAP y SMTP{Colors.RESET}")
-        email = input_required("Email de Office 365 (ej: admin@tuempresa.com)")
-        password = input_required("Contraseña o contraseña de aplicación")
+        email = input_required("Email de Gmail (ej: admin.tuempresa@gmail.com)")
+        password = input_required("Contraseña de aplicación de Gmail (16 caracteres)")
 
         return {
-            'imap_host': 'outlook.office365.com',
+            'imap_host': 'imap.gmail.com',
             'imap_port': 993,
             'imap_username': email,
             'imap_password': password,
-            'smtp_host': 'smtp.office365.com',
+            'smtp_host': 'smtp.gmail.com',
             'smtp_port': 587,
             'smtp_username': email,
             'smtp_password': password,
@@ -77,13 +77,13 @@ def configurar_correos():
     else:
         print(f"\n{Colors.BLUE}Configuración separada de cuentas{Colors.RESET}")
 
-        print("\n📥 Cuenta para RECIBIR confirmaciones:")
-        imap_email = input_required("Email")
-        imap_password = input_required("Contraseña")
+        print("\n📥 Cuenta Gmail para RECIBIR confirmaciones:")
+        imap_email = input_required("Email de Gmail")
+        imap_password = input_required("Contraseña de aplicación (16 caracteres)")
 
-        print("\n📤 Cuenta para ENVIAR solicitudes:")
-        smtp_email = input_required("Email")
-        smtp_password = input_required("Contraseña")
+        print("\n📤 Cuenta Gmail para ENVIAR solicitudes:")
+        smtp_email = input_required("Email de Gmail")
+        smtp_password = input_required("Contraseña de aplicación (16 caracteres)")
 
         usar_misma_oc = input_yes_no("¿Usar la misma cuenta SMTP para recibir OC?", True)
 
@@ -91,16 +91,16 @@ def configurar_correos():
             oc_email = smtp_email
             oc_password = smtp_password
         else:
-            print("\n📬 Cuenta para RECIBIR OC:")
-            oc_email = input_required("Email")
-            oc_password = input_required("Contraseña")
+            print("\n📬 Cuenta Gmail para RECIBIR OC:")
+            oc_email = input_required("Email de Gmail")
+            oc_password = input_required("Contraseña de aplicación (16 caracteres)")
 
         return {
-            'imap_host': 'outlook.office365.com',
+            'imap_host': 'imap.gmail.com',
             'imap_port': 993,
             'imap_username': imap_email,
             'imap_password': imap_password,
-            'smtp_host': 'smtp.office365.com',
+            'smtp_host': 'smtp.gmail.com',
             'smtp_port': 587,
             'smtp_username': smtp_email,
             'smtp_password': smtp_password,

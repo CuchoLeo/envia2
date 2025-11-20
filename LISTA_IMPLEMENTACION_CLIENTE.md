@@ -9,18 +9,18 @@
 
 ### ¿Cuántos correos necesito?
 
-**Respuesta corta:** **1-2 cuentas de Office 365 (Outlook)**
+**Respuesta corta:** **1-2 cuentas de Gmail**
 
 **Opción Recomendada (más simple):**
-✅ **1 cuenta de Office 365** que haga todo:
+✅ **1 cuenta de Gmail** que haga todo:
 - Recibe confirmaciones
 - Envía solicitudes de OC
 - Recibe respuestas con OC
 
 **Opción Avanzada (más organizado):**
-✅ **2 cuentas de Office 365:**
-- Email 1: Solo para recibir confirmaciones (ej: reservas@tuempresa.com)
-- Email 2: Para enviar solicitudes y recibir OC (ej: administracion@tuempresa.com)
+✅ **2 cuentas de Gmail:**
+- Email 1: Solo para recibir confirmaciones (ej: reservas.tuempresa@gmail.com)
+- Email 2: Para enviar solicitudes y recibir OC (ej: administracion.tuempresa@gmail.com)
 
 ---
 
@@ -29,9 +29,9 @@
 ### ✅ INFORMACIÓN MÍNIMA (Obligatoria):
 
 1. **Cuentas de Email:**
-   - [ ] 1-2 emails de Office 365 (Outlook)
-   - [ ] Contraseña normal O contraseña de aplicación (si tienen MFA activo)
-   - [ ] IMAP habilitado (verificar con administrador de Office 365)
+   - [ ] 1-2 emails de Gmail
+   - [ ] Contraseñas de aplicación de Gmail (requiere verificación en 2 pasos)
+   - [ ] IMAP habilitado en Gmail (habilitado por defecto)
 
 2. **Lista de Agencias:**
    - [ ] Nombres de agencias que requieren OC
@@ -105,8 +105,8 @@ He creado estos documentos listos para enviar:
 ```
 
 **Output esperado:**
-- ✅ Email(s) de Office 365 con contraseñas
-- ✅ Confirmación de IMAP habilitado
+- ✅ Email(s) de Gmail con contraseñas de aplicación
+- ✅ Verificación en 2 pasos habilitada
 - ✅ Lista de ~5-10 agencias con emails
 - ✅ 2-3 PDFs reales
 
@@ -367,7 +367,7 @@ Antes de declarar "listo para producción":
 ## 🎯 RESUMEN EJECUTIVO
 
 ### ¿Qué solicitar?
-**Mínimo:** 1-2 emails Gmail + lista agencias + 2-3 PDFs
+**Mínimo:** 1-2 emails de Gmail + lista agencias + 2-3 PDFs
 
 ### ¿Cuánto tiempo?
 **Total:** 5-7 días desde recepción de info
