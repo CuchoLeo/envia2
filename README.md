@@ -203,24 +203,57 @@ envia2/
 ├── app.py                      # Aplicación principal FastAPI
 ├── config.py                   # Configuración central
 ├── database.py                 # Modelos SQLAlchemy
-├── email_monitor.py            # Monitoreo IMAP
-├── email_sender.py             # Envío SMTP
-├── pdf_processor.py            # Extracción de datos de PDF
-├── scheduler.py                # Tareas programadas
 ├── requirements.txt            # Dependencias Python
 ├── .env                        # Configuración (no en Git)
 ├── .env.example                # Ejemplo de configuración
 ├── README.md                   # Esta documentación
+├── LISTA_IMPLEMENTACION_CLIENTE.md  # Guía de implementación
 │
-├── templates/                  # Plantillas HTML
-│   ├── dashboard.html          # Interfaz web admin
-│   ├── solicitud_inicial.html  # Correo día 0
-│   ├── recordatorio_dia2.html  # Correo día 2
-│   └── ultimatum_dia4.html     # Correo día 4
+├── src/                        # Módulos principales
+│   ├── email_monitor.py        # Monitoreo de emails (IMAP)
+│   ├── email_sender.py         # Envío de emails (SMTP)
+│   ├── imap_wrapper.py         # Wrapper de conexión IMAP
+│   ├── pdf_processor.py        # Extracción de datos de PDF
+│   └── scheduler.py            # Tareas programadas (APScheduler)
 │
-├── static/                     # Archivos estáticos
+├── scripts/                    # Scripts útiles
+│   ├── configurar_cliente.py  # Configuración interactiva
+│   ├── test_conexion.py       # Verificar conexiones IMAP/SMTP
+│   ├── enviar_solicitud_oc.py # Envío manual de solicitudes
+│   ├── marcar_no_leido.py     # Utilidad para testing
+│   └── verificar_emails.py    # Verificar emails recibidos
+│
+├── tests/                      # Tests
+│   ├── test_flujo_completo.py # Test end-to-end
+│   └── test_pdf.py            # Test procesador PDF
+│
+├── templates/                  # Plantillas de emails HTML
+│   ├── solicitud_inicial.html  # Email día 0
+│   ├── recordatorio_1.html     # Email día 2
+│   ├── recordatorio_2.html     # Email día 4
+│   └── ultimatum.html          # Email día 6+
+│
+├── docs/                       # Documentación
+│   ├── FLUJO_SISTEMA.md        # Flujo completo del sistema
+│   ├── CONFIGURACION_GMAIL.md  # Setup de Gmail
+│   ├── SOLICITUD_INFO_CLIENTE.md  # Formulario cliente
+│   ├── RESUMEN_PARA_CLIENTE.md    # Resumen ejecutivo
+│   └── PLAN_PRUEBAS_CLIENTE.md    # Plan de testing
+│
+├── data/                       # Datos del sistema
+│   ├── oc_seguimiento.db       # Base de datos SQLite
+│   ├── confirmaciones/         # PDFs de confirmaciones
+│   └── oc/                     # PDFs de OC recibidas
+│
 ├── logs/                       # Logs del sistema
-└── oc_files/                   # OC recibidas (se crea automáticamente)
+├── static/                     # Archivos estáticos web
+│
+└── deprecated/                 # Arquitecturas antiguas (no usar)
+    ├── README.md               # Info sobre archivos deprecados
+    ├── integraciones/          # Integraciones obsoletas (API, n8n)
+    ├── documentacion/          # Docs de sesiones antiguas
+    ├── scripts_diagnostico/    # Scripts de diagnóstico
+    └── tests_desarrollo/       # Tests de desarrollo
 ```
 
 ## ⚙️ Configuración Avanzada
@@ -423,6 +456,21 @@ Para problemas o sugerencias:
 1. Revisar esta documentación
 2. Verificar logs del sistema
 3. Ejecutar tests de diagnóstico
+
+## 📦 Carpeta Deprecated
+
+La carpeta `/deprecated/` contiene arquitecturas y código de versiones anteriores del sistema que ya no se utilizan. Incluye:
+
+- **Integraciones obsoletas:** API REST pública, workflows de n8n
+- **Documentación antigua:** Docs de sesiones de desarrollo anteriores
+- **Scripts de diagnóstico:** Tools que fueron reemplazados por versiones mejoradas
+- **Tests de desarrollo:** Tests básicos reemplazados por tests E2E
+
+**⚠️ No usar estos archivos en producción.** Se mantienen solo como referencia histórica.
+
+Ver `deprecated/README.md` para más detalles sobre qué contiene cada subcarpeta y por qué fue deprecado.
+
+---
 
 ## 📄 Licencia
 
