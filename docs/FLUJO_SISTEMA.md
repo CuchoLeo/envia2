@@ -13,10 +13,12 @@ El sistema automatiza el seguimiento de Órdenes de Compra (OC) requeridas por c
 
 ## 🎯 Componentes del Sistema
 
-### 1. **Sistema Principal** (Externo)
-- **Email:** `kontroltravel@ideasfractal.com`
-- **Función:** Genera y envía confirmaciones de reserva
-- **Acción:** Envía PDF de confirmación al cliente Y a seguimientoocx@gmail.com
+### 1. **Sistemas Principales** (Externos)
+- **Emails:**
+  - `kontroltravel@ideasfractal.com` (Principal)
+  - `v.rodriguezy@gmail.com` (Secundario)
+- **Función:** Generan y envían confirmaciones de reserva
+- **Acción:** Envían PDF de confirmación al cliente Y a seguimientoocx@gmail.com
 
 ### 2. **Sistema de Seguimiento OC** (Este sistema)
 - **Email:** `seguimientoocx@gmail.com`
@@ -42,8 +44,9 @@ El sistema automatiza el seguimiento de Órdenes de Compra (OC) requeridas por c
 
 ```
 ┌─────────────────────────────────────┐
-│ Sistema Principal (Ideas Fractal)   │
-│ kontroltravel@ideasfractal.com      │
+│ Sistemas Principales                │
+│ - kontroltravel@ideasfractal.com    │
+│ - v.rodriguezy@gmail.com            │
 └────────────┬────────────────────────┘
              │
              │ Genera confirmación
@@ -60,6 +63,7 @@ El sistema automatiza el seguimiento de Órdenes de Compra (OC) requeridas por c
                                    │
                                    │ Sistema monitorea
                                    │ IMAP cada 5 min
+                                   │ Solo remitentes autorizados
                                    ▼
 ```
 
@@ -319,6 +323,9 @@ OC_INBOX_HOST="imap.gmail.com"
 OC_INBOX_PORT=993
 OC_INBOX_USERNAME="seguimientoocx@gmail.com"
 OC_INBOX_PASSWORD="contraseña_aplicacion_aqui"
+
+# Remitentes autorizados para enviar confirmaciones
+ALLOWED_CONFIRMATION_SENDERS="kontroltravel@ideasfractal.com,v.rodriguezy@gmail.com"
 ```
 
 ---
@@ -327,16 +334,18 @@ OC_INBOX_PASSWORD="contraseña_aplicacion_aqui"
 
 ### **1. Monitor de Confirmaciones (ReservaMonitor)**
 - **Frecuencia:** Cada 5 minutos
-- **Acción:** Busca emails de kontroltravel@ideasfractal.com
+- **Acción:** Busca emails de remitentes autorizados
 - **Filtro:**
   - Asunto contiene: "confirmación" o "reserva"
+  - Remitente autorizado: kontroltravel@ideasfractal.com o v.rodriguezy@gmail.com
   - Tiene adjunto PDF
 - **Proceso:**
   1. Lee email
-  2. Descarga PDF
-  3. Extrae datos
-  4. Crea reserva en BD
-  5. Marca email como leído
+  2. Valida remitente autorizado
+  3. Descarga PDF
+  4. Extrae datos
+  5. Crea reserva en BD
+  6. Marca email como leído
 
 ### **2. Monitor de OC (OCMonitor)**
 - **Frecuencia:** Cada 5 minutos
@@ -433,9 +442,10 @@ data/
 ## 📞 Contactos del Flujo
 
 ```
-Sistema Principal:
-- Email: kontroltravel@ideasfractal.com
-- Función: Envía confirmaciones
+Sistemas Principales (Remitentes Autorizados):
+- Email 1: kontroltravel@ideasfractal.com
+- Email 2: v.rodriguezy@gmail.com
+- Función: Envían confirmaciones
 
 Sistema de OC:
 - Email: seguimientoocx@gmail.com
@@ -458,7 +468,9 @@ Finanzas/Contabilidad:
 
 ```
 seguimientoocx@gmail.com
-├── RECIBE confirmaciones de kontroltravel@ideasfractal.com
+├── RECIBE confirmaciones de:
+│   ├── kontroltravel@ideasfractal.com
+│   └── v.rodriguezy@gmail.com
 ├── ENVÍA solicitudes a agencias
 ├── ENVÍA recordatorios automáticos
 └── RECIBE OC de agencias

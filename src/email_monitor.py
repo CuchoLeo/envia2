@@ -194,6 +194,15 @@ class ReservaMonitor(EmailMonitor):
                 self.logger.debug(f"Correo no es confirmación de reserva: {email_data['subject']}")
                 continue
 
+            # Validar que el remitente esté autorizado
+            from_address = email_data['from']
+            if not settings.is_sender_allowed(from_address):
+                self.logger.warning(
+                    f"Remitente NO autorizado: {from_address}. "
+                    f"Correo ignorado: {email_data['subject']}"
+                )
+                continue
+
             # Verificar que tenga adjuntos PDF
             if not email_data['attachments']:
                 self.logger.debug(f"Correo sin adjuntos PDF: {email_data['subject']}")

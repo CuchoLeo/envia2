@@ -80,6 +80,12 @@ class Settings(BaseSettings):
     days_for_reminder_1: int = Field(default=2, env="DAYS_FOR_REMINDER_1")
     days_for_reminder_2: int = Field(default=4, env="DAYS_FOR_REMINDER_2")
 
+    # Remitentes autorizados para confirmaciones
+    allowed_confirmation_senders: str = Field(
+        default="kontroltravel@ideasfractal.com",
+        env="ALLOWED_CONFIRMATION_SENDERS"
+    )
+
     # Clientes que requieren OC
     agencies_requiring_oc: str = Field(
         default="WALVIS S.A.",
@@ -123,9 +129,22 @@ class Settings(BaseSettings):
             if agency.strip()
         ]
 
+    @property
+    def allowed_senders_list(self) -> List[str]:
+        """Retorna lista de remitentes autorizados para confirmaciones"""
+        return [
+            sender.strip().lower()
+            for sender in self.allowed_confirmation_senders.split(",")
+            if sender.strip()
+        ]
+
     def requires_oc(self, agency_name: str) -> bool:
         """Verifica si una agencia requiere seguimiento de OC"""
         return agency_name.strip() in self.agencies_list
+
+    def is_sender_allowed(self, sender_email: str) -> bool:
+        """Verifica si un remitente está autorizado para enviar confirmaciones"""
+        return sender_email.strip().lower() in self.allowed_senders_list
 
 
 # Instancia global de configuración
