@@ -13,33 +13,28 @@ Para implementar el Sistema de Seguimiento de Órdenes de Compra necesitamos la 
 
 ---
 
-## 1. 📧 CUENTAS DE GMAIL
-
-### Opción A: Una sola cuenta (recomendado para empezar)
+## 1. 📧 CUENTA DE GMAIL
 
 ⭐ **Email de Gmail:** _________________________________
-   (Ejemplo: administracion.kontroltravel@gmail.com)
+   (Ejemplo: seguimientoocx@gmail.com)
 
-**Esta cuenta se usará para:**
-- Recibir confirmaciones de reserva
-- Enviar solicitudes de OC a agencias
-- Recibir respuestas con OC
+**Esta cuenta gestionará TODO el ciclo:**
+- ✅ Recibir confirmaciones de reserva desde `kontroltravel@ideasfractal.com`
+- ✅ Detectar qué agencias requieren OC
+- ✅ Enviar solicitudes de OC a agencias
+- ✅ Enviar recordatorios automáticos (días 2, 4, 6)
+- ✅ Recibir respuestas con OC de las agencias
+- ✅ Confirmar recepción
 
-### Opción B: Cuentas separadas (opcional)
-
-📥 **Email Gmail para recibir confirmaciones:** _________________________________
-   (Ejemplo: reservas.kontroltravel@gmail.com)
-
-📤 **Email Gmail para enviar solicitudes/recibir OC:** _________________________________
-   (Ejemplo: administracion.kontroltravel@gmail.com)
+**Solo necesitas 1 cuenta Gmail para todo el sistema.**
 
 ---
 
-## 2. 🔐 CONTRASEÑAS DE APLICACIÓN DE GMAIL
+## 2. 🔐 CONTRASEÑA DE APLICACIÓN DE GMAIL
 
 ### Pasos que el cliente debe seguir:
 
-**Para CADA email de Gmail proporcionado:**
+**Para la cuenta de Gmail proporcionada:**
 
 #### A. Habilitar Verificación en 2 Pasos (si no está activa)
 
@@ -61,12 +56,9 @@ Para implementar el Sistema de Seguimiento de Órdenes de Compra necesitamos la 
    - Copiar SIN espacios: `xxxxxxxxxxxxxxxx`
 8. Click en "Listo"
 
-#### C. Guardar las Contraseñas
+#### C. Guardar la Contraseña
 
-⭐ **Contraseña de aplicación Gmail 1:** ________________________________
-   (16 caracteres, sin espacios)
-
-⭐ **Contraseña de aplicación Gmail 2 (si aplica):** ________________________________
+⭐ **Contraseña de aplicación Gmail:** ________________________________
    (16 caracteres, sin espacios)
 
 > ⚠️ **MUY IMPORTANTE:**
@@ -194,13 +186,14 @@ Para hacer las pruebas iniciales necesitamos:
 
 Por favor, marcar cuando esté listo:
 
-- [ ] Cuentas de Gmail configuradas
-- [ ] IMAP habilitado
-- [ ] Contraseñas de aplicación generadas
+- [ ] Cuenta de Gmail `seguimientoocx@gmail.com` (o similar) creada
+- [ ] IMAP habilitado en Gmail
+- [ ] Verificación en 2 pasos habilitada
+- [ ] Contraseña de aplicación generada
 - [ ] Lista de agencias completa
 - [ ] Emails de contacto de agencias verificados
-- [ ] PDFs de ejemplo enviados
-- [ ] Configuración de recordatorios definida
+- [ ] PDFs de ejemplo de confirmaciones enviados (2-3)
+- [ ] Configuración de recordatorios definida (días 2, 4, 6)
 - [ ] Emails para CC definidos
 - [ ] Logo de empresa enviado (opcional)
 - [ ] Disponibilidad para pruebas confirmada

@@ -9,18 +9,37 @@
 
 ### ¿Cuántos correos necesito?
 
-**Respuesta corta:** **1-2 cuentas de Gmail**
+**Respuesta:** **SOLO 1 cuenta de Gmail**
 
-**Opción Recomendada (más simple):**
-✅ **1 cuenta de Gmail** que haga todo:
-- Recibe confirmaciones
-- Envía solicitudes de OC
-- Recibe respuestas con OC
+### 📧 Cuenta Necesaria:
 
-**Opción Avanzada (más organizado):**
-✅ **2 cuentas de Gmail:**
-- Email 1: Solo para recibir confirmaciones (ej: reservas.tuempresa@gmail.com)
-- Email 2: Para enviar solicitudes y recibir OC (ej: administracion.tuempresa@gmail.com)
+**`seguimientoocx@gmail.com`** (o similar)
+
+Esta cuenta hace TODO:
+- ✅ Recibe confirmaciones de `kontroltravel@ideasfractal.com`
+- ✅ Detecta qué agencias requieren OC
+- ✅ Envía solicitudes de OC a las agencias
+- ✅ Envía recordatorios automáticos
+- ✅ Recibe respuestas con OC
+- ✅ Confirma recepción
+
+### 🔄 Flujo Completo:
+
+```
+kontroltravel@ideasfractal.com
+         │
+         ├─> Envía PDF confirmación al cliente
+         │
+         └─> Envía PDF confirmación a seguimientoocx@gmail.com
+                    │
+                    ├─> Sistema detecta y procesa
+                    ├─> Identifica si requiere OC
+                    ├─> Envía solicitud a agencia
+                    ├─> Envía recordatorios (días 2, 4, 6)
+                    └─> Recibe OC de la agencia
+```
+
+**✅ Solo necesitas 1 cuenta Gmail**
 
 ---
 
@@ -28,9 +47,9 @@
 
 ### ✅ INFORMACIÓN MÍNIMA (Obligatoria):
 
-1. **Cuentas de Email:**
-   - [ ] 1-2 emails de Gmail
-   - [ ] Contraseñas de aplicación de Gmail (requiere verificación en 2 pasos)
+1. **Cuenta de Email:**
+   - [ ] 1 email de Gmail: `seguimientoocx@gmail.com` (o similar)
+   - [ ] Contraseña de aplicación de Gmail (requiere verificación en 2 pasos)
    - [ ] IMAP habilitado en Gmail (habilitado por defecto)
 
 2. **Lista de Agencias:**
@@ -105,10 +124,10 @@ He creado estos documentos listos para enviar:
 ```
 
 **Output esperado:**
-- ✅ Email(s) de Gmail con contraseñas de aplicación
+- ✅ 1 email de Gmail (`seguimientoocx@gmail.com`) con contraseña de aplicación
 - ✅ Verificación en 2 pasos habilitada
 - ✅ Lista de ~5-10 agencias con emails
-- ✅ 2-3 PDFs reales
+- ✅ 2-3 PDFs reales de confirmación
 
 ---
 
@@ -367,7 +386,10 @@ Antes de declarar "listo para producción":
 ## 🎯 RESUMEN EJECUTIVO
 
 ### ¿Qué solicitar?
-**Mínimo:** 1-2 emails de Gmail + lista agencias + 2-3 PDFs
+**Mínimo:** 1 email de Gmail (`seguimientoocx@gmail.com`) + lista agencias + 2-3 PDFs
+
+### ¿Cómo funciona el flujo?
+`kontroltravel@ideasfractal.com` envía confirmaciones a `seguimientoocx@gmail.com`, que gestiona TODO el ciclo de OC automáticamente
 
 ### ¿Cuánto tiempo?
 **Total:** 5-7 días desde recepción de info

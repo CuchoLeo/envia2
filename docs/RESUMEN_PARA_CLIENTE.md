@@ -42,15 +42,37 @@ El sistema **automatiza completamente** el proceso de seguimiento de Órdenes de
 
 ### Información Mínima (15 minutos):
 
-1. **1-2 cuentas de Gmail** con:
+1. **1 cuenta de Gmail** (`seguimientoocx@gmail.com` o similar) con:
    - Verificación en 2 pasos habilitada
-   - Contraseñas de aplicación generadas (proceso automático de Google)
+   - Contraseña de aplicación generada (proceso automático de Google)
 
-2. **Lista de agencias que requieren OC** con emails
+2. **Lista de agencias que requieren OC** con emails de contacto
 
 3. **2-3 PDFs de ejemplo** de confirmaciones de reserva
 
 ### Ya está, eso es todo! 🎉
+
+---
+
+## 🔄 ¿Cómo Funciona el Flujo?
+
+```
+kontroltravel@ideasfractal.com
+         │
+         ├─> Envía PDF al cliente
+         │
+         └─> Envía PDF a seguimientoocx@gmail.com
+                    │
+                    ├─> Detecta y procesa
+                    ├─> Identifica si requiere OC
+                    ├─> Solicita OC a agencia
+                    ├─> Envía recordatorios (días 2, 4, 6)
+                    └─> Recibe OC de agencia
+                           │
+                           └─> ✅ Ciclo completo
+```
+
+**Una sola cuenta gestiona todo el proceso.**
 
 ---
 
