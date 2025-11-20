@@ -116,6 +116,9 @@ class PDFProcessor:
         loc_interno_match = re.search(r'LOC\s+Interno:\s*([A-Z0-9]+)', text, re.IGNORECASE)
         if loc_interno_match:
             data['loc_interno'] = loc_interno_match.group(1)
+            # Si no hay ID, usar LOC Interno como id_reserva
+            if 'id_reserva' not in data:
+                data['id_reserva'] = loc_interno_match.group(1)
 
         # Extraer Localizador
         localizador_match = re.search(r'Localizador:\s*(\d+)', text, re.IGNORECASE)

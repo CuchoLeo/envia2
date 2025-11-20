@@ -30,6 +30,7 @@ Base = declarative_base()
 # Enums
 class EstadoOC(enum.Enum):
     """Estados posibles de una orden de compra"""
+    NO_REQUIERE_OC = "no_requiere_oc"
     PENDIENTE = "pendiente"
     RECIBIDA = "recibida"
     CANCELADA = "cancelada"

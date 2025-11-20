@@ -7,7 +7,7 @@ import email
 from email.header import decode_header
 from email import policy
 from email.parser import BytesParser
-from email.utils import parsedate_to_datetime
+from email.utils import parsedate_to_datetime, parseaddr
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from pathlib import Path
@@ -195,10 +195,11 @@ class ReservaMonitor(EmailMonitor):
                 continue
 
             # Validar que el remitente esté autorizado
-            from_address = email_data['from']
-            if not settings.is_sender_allowed(from_address):
+            # Extraer solo el email del campo From (ignorando el nombre)
+            from_name, from_email = parseaddr(email_data['from'])
+            if not settings.is_sender_allowed(from_email):
                 self.logger.warning(
-                    f"Remitente NO autorizado: {from_address}. "
+                    f"Remitente NO autorizado: {from_email} ({email_data['from']}). "
                     f"Correo ignorado: {email_data['subject']}"
                 )
                 continue
@@ -229,7 +230,8 @@ class ReservaMonitor(EmailMonitor):
 
                     # Verificar si la agencia requiere seguimiento de OC
                     agencia = pdf_data.get('agencia', '')
-                    requiere_oc = settings.requires_oc(agencia)
+                    # requiere_oc = settings.requires_oc(agencia)  # Comentado: Todas las reservas requieren OC
+                    requiere_oc = True  # TODAS las reservas requieren OC
 
                     # Verificar si ya existe la reserva
                     id_reserva = pdf_data.get('id_reserva')
@@ -261,7 +263,7 @@ class ReservaMonitor(EmailMonitor):
                         observaciones_hotel=pdf_data.get('observaciones_hotel'),
                         notas_asesor=pdf_data.get('notas_asesor'),
                         fecha_emision=pdf_data.get('fecha_emision'),
-                        estado_oc=EstadoOC.PENDIENTE if requiere_oc else None,
+                        estado_oc=EstadoOC.PENDIENTE if requiere_oc else EstadoOC.NO_REQUIERE_OC,
                         requiere_oc=requiere_oc,
                         email_origen_id=str(email_data['uid']),
                         email_origen_fecha=parsedate_to_datetime(email_data['date']) if email_data.get('date') else datetime.now(),
@@ -439,6 +441,17 @@ class OCMonitor(EmailMonitor):
                 loc_interno=loc_match.group(1),
                 estado_oc=EstadoOC.PENDIENTE
             ).first()
+            if reserva:
+                return reserva
+
+        # Buscar por "Reserva CODIGO" en el asunto
+        reserva_match = re.search(r'Reserva[:\s]+([A-Z0-9]+)', text, re.IGNORECASE)
+        if reserva_match:
+            codigo = reserva_match.group(1)
+            # Buscar por id_reserva o loc_interno
+            reserva = db.query(Reserva).filter(
+                (Reserva.id_reserva == codigo) | (Reserva.loc_interno == codigo)
+            ).filter_by(estado_oc=EstadoOC.PENDIENTE).first()
             if reserva:
                 return reserva
 
