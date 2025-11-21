@@ -455,6 +455,17 @@ class OCMonitor(EmailMonitor):
             if reserva:
                 return reserva
 
+        # Buscar por "Orden de Compra CODIGO" o "OC CODIGO"
+        oc_match = re.search(r'(?:orden\s+de\s+compra|OC)[:\s]+([A-Z0-9]+)', text, re.IGNORECASE)
+        if oc_match:
+            codigo = oc_match.group(1)
+            # Buscar por id_reserva o loc_interno
+            reserva = db.query(Reserva).filter(
+                (Reserva.id_reserva == codigo) | (Reserva.loc_interno == codigo)
+            ).filter_by(estado_oc=EstadoOC.PENDIENTE).first()
+            if reserva:
+                return reserva
+
         # Buscar por agencia en el remitente
         from_email = email_data['from']
         reservas_pendientes = db.query(Reserva).filter_by(

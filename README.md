@@ -19,6 +19,12 @@ Este sistema independiente monitorea automáticamente los correos de confirmaci�
 - Monitoreo continuo de casillas IMAP para nuevas reservas
 - Extracción automática de datos de PDFs adjuntos
 - Detección de órdenes de compra recibidas por correo
+- Patrones flexibles de detección:
+  - "Reserva CODIGO" - ej: "Orden de Compra - Reserva AAFVDUA"
+  - "LOC CODIGO" - ej: "OC para LOC TEST2024002"
+  - "Orden de Compra CODIGO" - ej: "orden de compra AAFWHWS"
+  - "OC CODIGO" - ej: "OC AAFWHWS"
+  - Búsqueda case-insensitive y flexible
 
 ### 📧 Gestión de Comunicaciones
 - Tres niveles de correos con plantillas HTML profesionales
@@ -479,4 +485,4 @@ Propietario - Todos los derechos reservados
 ---
 
 **Desarrollado para Kontrol Travel**
-Sistema de gestión automatizada de órdenes de compra v1.0.0
+Sistema de gestión automatizada de órdenes de compra v1.1.1

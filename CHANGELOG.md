@@ -2,6 +2,24 @@
 
 Todos los cambios notables en el Sistema de Seguimiento de OC serán documentados en este archivo.
 
+## [1.1.1] - 2025-11-20
+
+### Agregado
+- Nuevo patrón de búsqueda para "Orden de Compra CODIGO" (`src/email_monitor.py:458-467`)
+  - Detecta asuntos como "orden de compra AAFWHWS" o "OC AAFWHWS"
+  - Búsqueda case-insensitive y flexible
+  - Permite asociar OC con formato más natural
+
+### Configuración
+- Agregado `cuchohbk@gmail.com` a lista de remitentes autorizados (`.env:77`)
+  - Permite recibir correos de OC desde esta casilla adicional
+  - Facilita testing y flujo de trabajo de producción
+
+### Correcciones
+- Corregida inconsistencia de mayúsculas/minúsculas en nombres de agencia
+  - "Hotel sales" → "Hotel Sales" para coincidir con configuración
+  - Asegura correcta visualización en dashboard
+
 ## [1.1.0] - 2025-11-20
 
 ### Agregado
