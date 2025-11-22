@@ -15,6 +15,17 @@ Todos los cambios notables en el Sistema de Seguimiento de OC serán documentado
   - Permite recibir correos de OC desde esta casilla adicional
   - Facilita testing y flujo de trabajo de producción
 
+### Documentación
+- Agregado archivo `DIAGRAMAS.md` con visualizaciones completas del sistema:
+  - Diagrama de Arquitectura del Sistema
+  - Diagrama de Flujo del Proceso de OC
+  - Diagrama de Secuencia - Flujo Completo
+  - Diagrama de Estados de una Reserva
+  - Diagrama de Componentes - Detalle Técnico
+  - Diagrama de Patrones de Detección de OC
+  - Diagrama ER de Base de Datos
+- Actualizado `README.md` con referencia a diagramas y ejemplos de patrones de detección
+
 ### Correcciones
 - Corregida inconsistencia de mayúsculas/minúsculas en nombres de agencia
   - "Hotel sales" → "Hotel Sales" para coincidir con configuración

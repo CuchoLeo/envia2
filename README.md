@@ -46,6 +46,8 @@ Este sistema independiente monitorea automáticamente los correos de confirmaci�
 
 ## 🏗️ Arquitectura del Sistema
 
+Para una visualización completa con diagramas interactivos, ver **[DIAGRAMAS.md](./DIAGRAMAS.md)**
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    Sistema de Seguimiento OC            │
