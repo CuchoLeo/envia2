@@ -2,9 +2,15 @@
 
 Sistema automatizado para gestionar el seguimiento de órdenes de compra en reservas hoteleras corporativas.
 
+**Versión**: 1.1.1 | **Estado**: Producción | **Cliente**: Kontrol Travel
+
+📄 **[Ver Alcance Completo del Proyecto →](./ALCANCE_PROYECTO.md)**
+
 ## 📖 Descripción
 
 Este sistema independiente monitorea automáticamente los correos de confirmación de reservas, identifica clientes corporativos que requieren orden de compra formal, y gestiona un flujo escalonado de comunicaciones para solicitar y hacer seguimiento a estas órdenes.
+
+**Objetivo**: Automatizar el 100% del proceso de solicitud y recepción de OC, eliminando intervención manual y asegurando cumplimiento documental.
 
 ### Flujo de Comunicaciones
 
