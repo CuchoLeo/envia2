@@ -94,7 +94,7 @@ try:
         )
 
         # Remitentes autorizados
-        allowed_senders = ['kontroltravel@ideasfractal.com', 'v.rodriguezy@gmail.com']
+        allowed_senders = ['reservasonline@hotelsales.cl', 'v.rodriguezy@gmail.com']
         is_authorized = from_email in allowed_senders
 
         # Mostrar información
@@ -124,7 +124,7 @@ try:
 
     print("\n" + "=" * 80)
     print("📋 REMITENTES AUTORIZADOS CONFIGURADOS:")
-    print("   - kontroltravel@ideasfractal.com")
+    print("   - reservasonline@hotelsales.cl")
     print("   - v.rodriguezy@gmail.com")
     print("\n💡 Para que un correo se procese debe cumplir TODO:")
     print("   1. Remitente autorizado")

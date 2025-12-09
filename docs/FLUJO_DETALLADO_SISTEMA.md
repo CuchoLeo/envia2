@@ -762,7 +762,7 @@ DAYS_FOR_REMINDER_2=4                   # Días para ultimátum
 ═══════════════════════════════════════════════════════════════════
   REMITENTES AUTORIZADOS ⭐
 ═══════════════════════════════════════════════════════════════════
-ALLOWED_SENDERS=reservas@ideasfractal.com,booking@agency.com,admin@example.com
+ALLOWED_CONFIRMATION_SENDERS=reservasonline@hotelsales.cl,v.rodriguezy@gmail.com
                 # Lista separada por comas
                 # Solo estos emails pueden crear reservas
 

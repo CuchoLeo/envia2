@@ -82,7 +82,7 @@ class Settings(BaseSettings):
 
     # Remitentes autorizados para confirmaciones
     allowed_confirmation_senders: str = Field(
-        default="kontroltravel@ideasfractal.com",
+        default="reservasonline@hotelsales.cl",
         env="ALLOWED_CONFIRMATION_SENDERS"
     )
 

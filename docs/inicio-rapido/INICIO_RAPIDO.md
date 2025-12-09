@@ -49,9 +49,9 @@ IMAP_PASSWORD=abcd efgh ijkl mnop    # ← Contraseña de aplicación (SIN espac
 
 # Cuenta Gmail que envía solicitudes de OC
 SMTP_HOST=smtp.gmail.com
-SMTP_USERNAME=kontroltravel@ideasfractal.com
+SMTP_USERNAME=reservasonline@hotelsales.cl
 SMTP_PASSWORD=wxyz abcd efgh ijkl    # ← Contraseña de aplicación (SIN espacios)
-SMTP_FROM_EMAIL=kontroltravel@ideasfractal.com
+SMTP_FROM_EMAIL=reservasonline@hotelsales.cl
 
 # Cuenta para recibir OC (puede ser la misma que IMAP)
 OC_INBOX_HOST=imap.gmail.com
@@ -62,7 +62,7 @@ OC_INBOX_PASSWORD=abcd efgh ijkl mnop
 DATABASE_URL=sqlite:///./data/oc_seguimiento.db
 
 # Remitentes autorizados para confirmaciones
-ALLOWED_CONFIRMATION_SENDERS=kontroltravel@ideasfractal.com,v.rodriguezy@gmail.com,cuchohbk@gmail.com
+ALLOWED_CONFIRMATION_SENDERS=reservasonline@hotelsales.cl,v.rodriguezy@gmail.com,cuchohbk@gmail.com
 
 # Clientes que requieren OC (opcional si cargas desde Excel)
 AGENCIES_REQUIRING_OC=WALVIS S.A.,EMPRESA CORPORATIVA LTDA
@@ -280,7 +280,7 @@ PYTHONPATH=. python scripts/utils/test_conexion.py
 
 2. **Remitente no autorizado**:
    - Verifica que el remitente esté en `ALLOWED_CONFIRMATION_SENDERS` en `.env`
-   - Por defecto: kontroltravel@ideasfractal.com, v.rodriguezy@gmail.com, cuchohbk@gmail.com
+   - Por defecto: reservasonline@hotelsales.cl, v.rodriguezy@gmail.com, cuchohbk@gmail.com
 
 3. **Asunto no reconocido**:
    - Usa palabras clave: "confirmación", "reserva", "resumen", "servicio", "hotel"
