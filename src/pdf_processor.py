@@ -152,19 +152,51 @@ class PDFProcessor:
         if telefono_match:
             data['telefono_hotel'] = telefono_match.group(1)
 
-        # Extraer Total (monto)
-        total_match = re.search(r'Total:\s*CLP\s*([\d,.]+)', text, re.IGNORECASE)
-        if total_match:
-            monto_str = total_match.group(1).replace(',', '').replace('.', '')
-            try:
-                # Asumir que los últimos 2 dígitos son decimales si hay punto
-                if ',' in total_match.group(1):
-                    data['monto_total'] = float(monto_str) / 100
-                else:
+        # Extraer Total (monto) - MÚLTIPLES FORMATOS SOPORTADOS
+        # Patrones para detectar el monto total en diferentes formatos
+        monto_patterns = [
+            r'Total:\s*CLP\s*\$?\s*([\d,.]+)',           # Total: CLP 123456 o Total: CLP $123.456
+            r'Total:\s*\$\s*([\d,.]+)',                  # Total: $123.456
+            r'Monto\s+Total:\s*CLP\s*\$?\s*([\d,.]+)',   # Monto Total: CLP 123456
+            r'Monto\s+Total:\s*\$\s*([\d,.]+)',          # Monto Total: $123.456
+            r'Monto:\s*CLP\s*\$?\s*([\d,.]+)',           # Monto: CLP 123456
+            r'Monto:\s*\$\s*([\d,.]+)',                  # Monto: $123.456
+            r'Total\s+a\s+Pagar:\s*CLP\s*\$?\s*([\d,.]+)',  # Total a Pagar: CLP 123456
+            r'Total\s+a\s+Pagar:\s*\$\s*([\d,.]+)',      # Total a Pagar: $123.456
+            r'Precio\s+Total:\s*CLP\s*\$?\s*([\d,.]+)',  # Precio Total: CLP 123456
+            r'Precio\s+Total:\s*\$\s*([\d,.]+)',         # Precio Total: $123.456
+            r'CLP\s*\$?\s*([\d,.]+)\s*(?:Total|Monto)',  # CLP 123456 Total
+            r'Total.*?CLP\s*\$?\s*([\d,.]+)',            # Total ... CLP 123456
+            r'(?:Total|Monto).*?\$\s*([\d,.]+)',         # Total/Monto ... $123.456
+        ]
+
+        for pattern in monto_patterns:
+            total_match = re.search(pattern, text, re.IGNORECASE)
+            if total_match:
+                monto_str = total_match.group(1).replace(',', '').replace('.', '')
+                try:
+                    # Convertir el monto
+                    # Si el formato original tenía punto como separador de miles (ej: 123.456)
+                    # se eliminó y quedó 123456, lo cual es correcto
                     data['monto_total'] = float(monto_str)
-                data['moneda'] = 'CLP'
-            except ValueError:
-                self.logger.warning(f"No se pudo convertir monto: {total_match.group(1)}")
+                    data['moneda'] = 'CLP'
+                    self.logger.info(f"💰 Monto extraído: CLP {data['monto_total']} (patrón: {pattern[:30]}...)")
+                    break  # Salir del loop si encontramos un monto válido
+                except ValueError:
+                    self.logger.warning(f"No se pudo convertir monto: {total_match.group(1)}")
+                    continue  # Intentar con el siguiente patrón
+
+        # Si no se encontró con ningún patrón, intentar buscar cualquier número grande precedido de CLP o $
+        if 'monto_total' not in data:
+            fallback_match = re.search(r'(?:CLP|\$)\s*\$?\s*([\d,.]{5,})', text, re.IGNORECASE)
+            if fallback_match:
+                monto_str = fallback_match.group(1).replace(',', '').replace('.', '')
+                try:
+                    data['monto_total'] = float(monto_str)
+                    data['moneda'] = 'CLP'
+                    self.logger.info(f"💰 Monto extraído (fallback): CLP {data['monto_total']}")
+                except ValueError:
+                    pass
 
         # Extraer Check-in
         checkin_match = re.search(

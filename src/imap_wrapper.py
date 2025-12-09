@@ -168,8 +168,25 @@ class SimpleIMAPClient:
                 self.logger.warning(f"FETCH retornó estado {status}")
                 return None
 
-            # Parsear el mensaje
+            # Validar que data tiene el formato esperado
+            if not data or len(data) == 0:
+                self.logger.warning(f"FETCH retornó data vacío para mensaje {message_id}")
+                return None
+
+            # Verificar que data[0] es una tupla
+            if not isinstance(data[0], tuple) or len(data[0]) < 2:
+                self.logger.warning(f"FETCH retornó formato inesperado para mensaje {message_id}: {type(data[0])}")
+                return None
+
+            # Extraer el contenido del mensaje
             raw_email = data[0][1]
+
+            # Validar que raw_email es bytes
+            if not isinstance(raw_email, bytes):
+                self.logger.error(f"FETCH retornó tipo inesperado para mensaje {message_id}: {type(raw_email)}")
+                return None
+
+            # Parsear el mensaje
             msg = BytesParser(policy=policy.default).parsebytes(raw_email)
 
             # Extraer información básica
@@ -229,6 +246,8 @@ class SimpleIMAPClient:
 
         except Exception as e:
             self.logger.error(f"Error obteniendo mensaje {message_id}: {e}")
+            import traceback
+            self.logger.debug(f"Stack trace: {traceback.format_exc()}")
             return None
 
     def mark_as_read(self, message_id: int):

@@ -2,6 +2,12 @@
 
 Guía paso a paso para probar el Sistema de Seguimiento de OC usando 2 cuentas Gmail personales.
 
+**Versión**: 1.3.0 | **Última actualización**: 8 de Diciembre de 2024
+
+> 📖 **Para inicio rápido**: Ver `INICIO_RAPIDO.md` para configuración en 10 minutos.
+>
+> Esta guía es más detallada y cubre escenarios adicionales.
+
 ## 📋 Requisitos Previos
 
 - **2 cuentas Gmail** (puedes crear cuentas nuevas si es necesario)
@@ -66,7 +72,8 @@ DEBUG=True
 LOG_LEVEL=INFO
 
 # ==================== BASE DE DATOS ====================
-DATABASE_URL=sqlite:///./oc_seguimiento.db
+# Nueva ubicación v1.3.0: data/oc_seguimiento.db
+DATABASE_URL=sqlite:///./data/oc_seguimiento.db
 
 # ==================== CORREO DE MONITOREO (IMAP) ====================
 # Cuenta Gmail #1 - Donde llegarán las confirmaciones con PDF
@@ -146,7 +153,7 @@ Deberías ver:
 ### Test 2: Probar Extracción de PDF
 
 ```bash
-python test_pdf.py "resumen del servicio.pdf"
+python tests/test_pdf.py "data/reservas_prueba/resumen del servicio.pdf"
 ```
 
 Deberías ver:
@@ -396,7 +403,7 @@ print('✅ Correo enviado')
 
 **Verificar:**
 ```bash
-python test_pdf.py "resumen del servicio.pdf"
+python tests/test_pdf.py "data/reservas_prueba/resumen del servicio.pdf"
 ```
 
 **Si falla:**
@@ -462,6 +469,66 @@ Edita el PDF o crea nuevos con diferentes nombres de agencia para probar:
 - [ ] Recordatorios se detienen
 - [ ] API REST funciona
 - [ ] Logs se generan correctamente
+
+---
+
+## 🆕 Novedades v1.3.0
+
+El proyecto ha sido reorganizado con una estructura profesional:
+
+### Sistema de Gestión Integrado
+
+```bash
+# Gestionar el sistema fácilmente
+./scripts/gestion/gestionar_sistema.sh start     # Iniciar sistema
+./scripts/gestion/gestionar_sistema.sh stop      # Detener sistema
+./scripts/gestion/gestionar_sistema.sh status    # Ver estado
+./scripts/gestion/gestionar_sistema.sh logs      # Ver logs en tiempo real
+./scripts/gestion/gestionar_sistema.sh restart   # Reiniciar sistema
+```
+
+### Scripts Organizados por Categoría
+
+```bash
+# Base de Datos
+python scripts/database/crear_bd.py              # Crear BD
+python scripts/database/limpiar_base_datos.py    # Limpiar datos
+python scripts/database/cargar_clientes_excel.py # Cargar clientes
+
+# Testing y Verificación
+python scripts/testing/check_inbox.py            # Verificar correos
+python scripts/testing/generar_pdf_prueba.py     # Generar PDFs
+python scripts/testing/verificar_correos.py      # Verificar config
+
+# Utilidades
+python scripts/utils/test_conexion.py            # Test IMAP/SMTP
+python scripts/utils/enviar_prueba.py            # Enviar pruebas
+python scripts/utils/configurar_cliente.py       # Configuración
+```
+
+### Nuevas Vistas Web
+
+- **Vista de Reservas**: http://localhost:8001/reservas
+  - Todas las reservas con filtros y búsqueda
+  - Estadísticas en tiempo real
+
+- **Gestión de Clientes**: http://localhost:8001/clientes
+  - 79 clientes configurados desde Excel
+  - Filtros por requiere/no requiere OC
+
+### Estructura Actualizada
+
+- Base de datos ahora en: `data/oc_seguimiento.db`
+- PDFs de prueba en: `data/reservas_prueba/`
+- Scripts organizados en: `scripts/gestion/`, `database/`, `testing/`, `utils/`
+- Documentación categorizada en: `docs/`
+
+### Más Información
+
+- **Estructura completa**: `ESTRUCTURA_PROYECTO.md`
+- **Guía de scripts**: `scripts/README.md`
+- **Índice de docs**: `docs/README.md`
+- **Changelog**: `CHANGELOG.md`
 
 ---
 

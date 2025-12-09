@@ -1,7 +1,15 @@
 """
 Script para verificar emails no leídos manualmente
 """
-from imap_wrapper import SimpleIMAPClient
+import sys
+import os
+
+# Agregar raíz del proyecto al path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, project_root)
+os.chdir(project_root)
+
+from src.imap_wrapper import SimpleIMAPClient
 from config import settings
 
 client = SimpleIMAPClient(

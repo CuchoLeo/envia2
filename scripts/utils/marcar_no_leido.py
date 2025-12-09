@@ -1,7 +1,15 @@
 """
 Script temporal para marcar un email como no leído
 """
-from imap_wrapper import SimpleIMAPClient
+import sys
+import os
+
+# Agregar raíz del proyecto al path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, project_root)
+os.chdir(project_root)
+
+from src.imap_wrapper import SimpleIMAPClient
 from config import settings
 
 def marcar_como_no_leido(subject_contains: str):

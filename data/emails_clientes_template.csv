@@ -1,0 +1,93 @@
+# Plantilla para actualizar emails de contacto de clientes
+# Formato: NOMBRE_AGENCIA,email@ejemplo.com
+# Líneas que empiecen con # serán ignoradas
+#
+# INSTRUCCIONES:
+# 1. Reemplaza "contacto@NOMBREAGENCIA.com" con el email real de cada cliente
+# 2. Guarda el archivo
+# 3. Ejecuta: python scripts/utils/actualizar_emails_clientes.py --archivo data/emails_clientes_template.csv
+#
+# NOTA: Los clientes marcados con (NO REQUIERE OC) no necesitan email urgente,
+#       pero es recomendable configurarlo para futuras necesidades
+#
+# ==================== CLIENTES QUE REQUIEREN OC (37) ====================
+SAVAL,contacto@saval.com
+SPARTA,contacto@sparta.com
+WALVIS S.A.,contacto@walvis.com
+ISAMAY S.A.,contacto@isamay.com
+TURISMOTOUR SPA,contacto@turismotour.com
+CAJA 18,contacto@caja18.com
+CENTRAL DE COMPRAS MINEDUC,contacto@mineduc.com
+BIOBIO,contacto@biobio.com
+COMSA,contacto@comsa.com
+HOSPITAL EL PINO,contacto@hospitalpino.com
+SERCOINTER,contacto@sercointer.com
+SERNATUR,contacto@sernatur.com
+ECOMET,contacto@ecomet.com
+ZENIT,contacto@zenit.com
+SOPROLE,contacto@soprole.com
+ASUNTOSA,contacto@asuntosa.com
+TRANSBANK,contacto@transbank.com
+GLOBAL NET S.A,contacto@globalnet.com
+ENTEL,contacto@entel.com
+BICE,contacto@bice.com
+SECURITY,contacto@security.com
+COPESA,contacto@copesa.com
+UNETE,contacto@unete.com
+DICTUC,contacto@dictuc.com
+AFP HABITAT,contacto@habitat.com
+EMBAJADA DE TURQUIA,contacto@turquia.com
+EMBAJADA DE ESLOVENIA,contacto@eslovenia.com
+SHELL,contacto@shell.com
+ENAEX,contacto@enaex.com
+Hotel Sales,contacto@hotelsales.com
+ESMAX,contacto@esmax.com
+ENJOY,contacto@enjoy.com
+FARMACIAS CRUZ VERDE,contacto@cruzverde.com
+CHILEXPRESS,contacto@chilexpress.com
+SODIMAC,contacto@sodimac.com
+BLUMAR,contacto@blumar.com
+BIOTEC,contacto@biotec.com
+#
+# ==================== CLIENTES QUE NO REQUIEREN OC (39) ====================
+# (Opcional pero recomendado configurar sus emails)
+#
+FUNDACION COANIL,contacto@coanil.com
+TRICOLOR,contacto@tricolor.com
+HTM,contacto@htm.com
+LINEA DIRECTA,contacto@lineadirecta.com
+LATINOAMERICANA DE SEGUROS,contacto@latinoseguros.com
+ROCHE,contacto@roche.com
+CHILECARNE,contacto@chilecarne.com
+BENETTON,contacto@benetton.com
+BLUE EXPRESS,contacto@blueexpress.com
+ALSEA,contacto@alsea.com
+CAMARA DE COMERCIO DE SANTIAGO,contacto@ccs.com
+CONSTRUCTORA SALFA,contacto@salfa.com
+JOHNSON & JOHNSON,contacto@jnj.com
+PUCV,contacto@pucv.com
+UDD,contacto@udd.com
+ISA INTERVIAL,contacto@isaintervial.com
+MUTUAL DE SEGURIDAD,contacto@mutual.com
+PACIFICO SEGUROS,contacto@pacifico.com
+DERCO,contacto@derco.com
+CONSORCIO,contacto@consorcio.com
+AGROSUPER,contacto@agrosuper.com
+CODELCO,contacto@codelco.com
+EMPRESAS CAROZZI,contacto@carozzi.com
+CAMARA DE COMERCIO ITALIANA,contacto@camaraitaliana.com
+BANCO DE CHILE,contacto@bancochile.com
+BANCO SANTANDER,contacto@santander.com
+PULLMAN BUS,contacto@pullman.com
+EWAN TOURS,contacto@ewan.com
+AGRIPALMA,contacto@agripalma.com
+ISAPRES,contacto@isapres.com
+ESCONDIDA,contacto@escondida.com
+SMU,contacto@smu.com
+CENCOSUD,contacto@cencosud.com
+UNILEVER,contacto@unilever.com
+AFP CAPITAL,contacto@afpcapital.com
+DIMACOFI,contacto@dimacofi.com
+ALTO LAS CONDES,contacto@altolascondes.com
+YPANEL,contacto@ypanel.com
+CONAF,contacto@conaf.com

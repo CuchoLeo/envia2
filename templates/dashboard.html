@@ -181,6 +181,40 @@
         .api-links a:hover {
             text-decoration: underline;
         }
+
+        .nav-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .nav-btn span {
+            margin-right: 10px;
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
@@ -188,6 +222,15 @@
         <div class="header">
             <h1>📋 {{ settings.app_name }}</h1>
             <p>Sistema automatizado de seguimiento de órdenes de compra - v{{ settings.app_version }}</p>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="/reservas" class="nav-btn">
+                <span>📋</span> Ver Todas las Reservas
+            </a>
+            <a href="/clientes" class="nav-btn">
+                <span>👥</span> Gestionar Clientes
+            </a>
         </div>
 
         <div class="stats-grid">
@@ -229,7 +272,8 @@
                         <th>Hotel</th>
                         <th>Check-in</th>
                         <th>Monto</th>
-                        <th>Días</th>
+                        <th>Fecha Correo (Día 0)</th>
+                        <th>Días Transcurridos</th>
                         <th>Estado</th>
                     </tr>
                 </thead>
@@ -243,8 +287,15 @@
                         <td>{{ reserva.fecha_checkin.strftime('%d/%m/%Y') if reserva.fecha_checkin else 'N/A' }}</td>
                         <td>{{ reserva.moneda }} {{ "{:,.0f}".format(reserva.monto_total) }}</td>
                         <td>
+                            {% if reserva.email_origen_fecha %}
+                            <strong>{{ reserva.email_origen_fecha.strftime('%d/%m/%Y %H:%M') }}</strong>
+                            {% else %}
+                            <span style="color: #6c757d;">{{ reserva.fecha_creacion.strftime('%d/%m/%Y') }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
                             <strong style="color: {% if reserva.dias_desde_creacion >= 4 %}#dc3545{% elif reserva.dias_desde_creacion >= 2 %}#ffc107{% else %}#28a745{% endif %}">
-                                {{ reserva.dias_desde_creacion }}
+                                Día {{ reserva.dias_desde_creacion }}
                             </strong>
                         </td>
                         <td>

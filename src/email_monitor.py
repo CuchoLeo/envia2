@@ -188,11 +188,25 @@ class ReservaMonitor(EmailMonitor):
         processed_count = 0
 
         for email_data in emails:
-            # Filtrar solo correos de confirmación de reserva
+            # Filtrar correos relacionados con reservas (múltiples palabras clave)
             subject = email_data['subject'].lower()
-            if 'confirmación' not in subject and 'confirmacion' not in subject and 'confirmation' not in subject:
-                self.logger.debug(f"Correo no es confirmación de reserva: {email_data['subject']}")
+
+            # Lista de palabras clave que indican que es una reserva
+            keywords_reserva = [
+                'confirmación', 'confirmacion', 'confirmation',
+                'resumen', 'reserva', 'reservation', 'booking',
+                'hotel', 'hospedaje', 'alojamiento',
+                'servicio', 'service'
+            ]
+
+            # Verificar si el asunto contiene alguna palabra clave
+            is_reserva = any(keyword in subject for keyword in keywords_reserva)
+
+            if not is_reserva:
+                self.logger.debug(f"Correo no parece ser de reserva: {email_data['subject']}")
                 continue
+
+            self.logger.info(f"✅ Correo identificado como reserva: {email_data['subject']}")
 
             # Validar que el remitente esté autorizado
             # Extraer solo el email del campo From (ignorando el nombre)

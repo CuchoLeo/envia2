@@ -152,6 +152,44 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
     })
 
 
+@app.get("/reservas", response_class=HTMLResponse)
+async def ver_reservas(request: Request, db: Session = Depends(get_db)):
+    """Vista HTML de todas las reservas"""
+    # Obtener todas las reservas
+    reservas = db.query(Reserva).order_by(Reserva.fecha_creacion.desc()).all()
+
+    return templates.TemplateResponse("reservas.html", {
+        "request": request,
+        "reservas": reservas,
+        "settings": settings
+    })
+
+
+@app.get("/clientes", response_class=HTMLResponse)
+async def ver_clientes(request: Request, db: Session = Depends(get_db)):
+    """Vista HTML de todos los clientes"""
+    # Obtener todos los clientes
+    clientes = db.query(ConfiguracionCliente).order_by(
+        ConfiguracionCliente.nombre_agencia
+    ).all()
+
+    # Estadísticas
+    total_clientes = len(clientes)
+    clientes_con_oc = sum(1 for c in clientes if c.requiere_oc)
+    clientes_sin_oc = total_clientes - clientes_con_oc
+    clientes_activos = sum(1 for c in clientes if c.activo)
+
+    return templates.TemplateResponse("clientes.html", {
+        "request": request,
+        "clientes": clientes,
+        "total_clientes": total_clientes,
+        "clientes_con_oc": clientes_con_oc,
+        "clientes_sin_oc": clientes_sin_oc,
+        "clientes_activos": clientes_activos,
+        "settings": settings
+    })
+
+
 # ==================== API REST ====================
 
 @app.get("/api/health")

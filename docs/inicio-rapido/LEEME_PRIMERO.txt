@@ -1,120 +1,233 @@
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║                                                                          ║
-║   📋 SISTEMA DE SEGUIMIENTO DE ÓRDENES DE COMPRA                        ║
+║   📋 SISTEMA DE SEGUIMIENTO DE ÓRDENES DE COMPRA v1.3.2                ║
 ║   Sistema automatizado para gestión de OC en reservas hoteleras         ║
 ║                                                                          ║
 ╚══════════════════════════════════════════════════════════════════════════╝
+
+⚠️  IMPORTANTE: Los scripts Python requieren PYTHONPATH=. para funcionar
+💡  Tip: Usa ./run_script.sh para ejecutar scripts de forma más fácil
 
 🚀 INICIO RÁPIDO
 ═══════════════════════════════════════════════════════════════════════════
 
 1️⃣  LEER PRIMERO:
-    📄 INICIO_RAPIDO.md       ← Guía de 10 minutos para empezar
-    📄 GUIA_PRUEBA_LOCAL.md   ← Guía completa de pruebas con Gmail
+    📄 docs/inicio-rapido/INICIO_RAPIDO.md        ← Guía de 10 minutos
+    📄 docs/inicio-rapido/GUIA_PRUEBA_LOCAL.md    ← Guía detallada
+    📄 ESTRUCTURA_PROYECTO.md                      ← Estructura del proyecto
 
 2️⃣  INSTALAR:
-    ./setup.sh                ← Instalación automática
-    nano .env                 ← Configurar credenciales Gmail
+    python3 -m venv venv                           ← Crear entorno virtual
+    source venv/bin/activate                       ← Activar entorno
+    pip install -r requirements.txt                ← Instalar dependencias
+    cp .env.example .env                           ← Copiar configuración
+    nano .env                                      ← Configurar credenciales
 
-3️⃣  PROBAR:
-    python app.py             ← Iniciar sistema
-    http://localhost:8001     ← Abrir dashboard
+3️⃣  INICIALIZAR:
+    PYTHONPATH=. python scripts/database/crear_bd.py            ← Crear BD
+    PYTHONPATH=. python scripts/database/cargar_clientes_excel.py  ← Clientes
+    # O usando el wrapper:
+    ./run_script.sh scripts/database/crear_bd.py
 
-4️⃣  ENVIAR PRUEBAS:
-    python enviar_prueba.py   ← Enviar correos de prueba
+4️⃣  INICIAR SISTEMA:
+    ./scripts/gestion/gestionar_sistema.sh start   ← Iniciar (recomendado)
+    # O directamente:
+    python app.py                                   ← Iniciar manualmente
+
+5️⃣  VERIFICAR:
+    http://localhost:8001                          ← Abrir dashboard
+    http://localhost:8001/reservas                 ← Ver todas las reservas
+    http://localhost:8001/clientes                 ← Gestionar clientes
+
+6️⃣  ENVIAR PRUEBAS:
+    PYTHONPATH=. python scripts/utils/enviar_prueba.py          ← Correos
+    PYTHONPATH=. python scripts/testing/generar_pdf_prueba.py   ← PDFs
+    # O usando el wrapper:
+    ./run_script.sh scripts/utils/enviar_prueba.py
 
 
 📚 DOCUMENTACIÓN
 ═══════════════════════════════════════════════════════════════════════════
 
-README.md                   - Documentación completa del sistema
-INICIO_RAPIDO.md           - Guía rápida (10 minutos)
-GUIA_PRUEBA_LOCAL.md       - Guía detallada de pruebas con Gmail
+README.md                                - Documentación completa del sistema
+docs/README.md                           - Índice de toda la documentación
+docs/inicio-rapido/INICIO_RAPIDO.md      - Guía rápida (10 minutos)
+docs/inicio-rapido/GUIA_PRUEBA_LOCAL.md  - Guía detallada de pruebas
+docs/DIAGRAMAS.md                        - Diagramas del sistema
+ESTRUCTURA_PROYECTO.md                   - Estructura del proyecto
+CHANGELOG.md                             - Historial de cambios
 
 
-🔧 SCRIPTS ÚTILES
+🔧 SCRIPTS ÚTILES (Nueva estructura v1.3.0)
 ═══════════════════════════════════════════════════════════════════════════
 
-setup.sh                    - Instalación automatizada
-verify_install.py          - Verificar instalación
-test_pdf.py                - Probar extracción de PDF
-enviar_prueba.py           - Enviar correos de prueba
-config.py                  - Verificar configuración
-database.py                - Inicializar base de datos
+GESTIÓN DEL SISTEMA (scripts/gestion/):
+  ./scripts/gestion/gestionar_sistema.sh start    - Iniciar sistema
+  ./scripts/gestion/gestionar_sistema.sh stop     - Detener sistema
+  ./scripts/gestion/gestionar_sistema.sh restart  - Reiniciar sistema
+  ./scripts/gestion/gestionar_sistema.sh status   - Ver estado
+  ./scripts/gestion/gestionar_sistema.sh logs     - Ver logs en tiempo real
+
+BASE DE DATOS (scripts/database/):
+  python scripts/database/crear_bd.py             - Crear/inicializar BD
+  python scripts/database/limpiar_base_datos.py   - Limpiar datos de prueba
+  python scripts/database/cargar_clientes_excel.py - Cargar clientes desde Excel
+
+TESTING (scripts/testing/):
+  python scripts/testing/check_inbox.py           - Verificar correos recibidos
+  python scripts/testing/generar_pdf_prueba.py    - Generar PDFs de prueba
+  python scripts/testing/verificar_correos.py     - Verificar configuración
+
+UTILIDADES (scripts/utils/):
+  python scripts/utils/test_conexion.py           - Probar conexión IMAP/SMTP
+  python scripts/utils/configurar_cliente.py      - Configuración interactiva
+  python scripts/utils/enviar_prueba.py           - Enviar correos de prueba
+
+VERIFICACIÓN:
+  python config.py                                 - Verificar configuración
+  python database.py                               - Verificar base de datos
 
 
 ⚙️  CONFIGURACIÓN MÍNIMA (.env)
 ═══════════════════════════════════════════════════════════════════════════
 
-IMAP_USERNAME=cuenta1@gmail.com       # Recibe confirmaciones
-IMAP_PASSWORD=abcdefghijklmnop        # Contraseña de aplicación
+# Correo que recibe confirmaciones de reservas
+IMAP_HOST=imap.gmail.com
+IMAP_USERNAME=seguimientoocx@gmail.com
+IMAP_PASSWORD=abcd efgh ijkl mnop          # ← Contraseña de aplicación Gmail
 
-SMTP_USERNAME=cuenta2@gmail.com       # Envía solicitudes
-SMTP_PASSWORD=wxyzabcdefghijkl        # Contraseña de aplicación
+# Correo que envía solicitudes de OC
+SMTP_HOST=smtp.gmail.com
+SMTP_USERNAME=kontroltravel@ideasfractal.com
+SMTP_PASSWORD=wxyz abcd efgh ijkl          # ← Contraseña de aplicación Gmail
+SMTP_FROM_EMAIL=kontroltravel@ideasfractal.com
 
-OC_INBOX_USERNAME=cuenta1@gmail.com   # Recibe OC
-OC_INBOX_PASSWORD=abcdefghijklmnop
+# Correo que recibe las OC de respuesta
+OC_INBOX_HOST=imap.gmail.com
+OC_INBOX_USERNAME=seguimientoocx@gmail.com
+OC_INBOX_PASSWORD=abcd efgh ijkl mnop      # ← Misma que IMAP
 
-AGENCIES_REQUIRING_OC=WALVIS S.A.     # Clientes que requieren OC
+# Base de datos (ya configurada)
+DATABASE_URL=sqlite:///./data/oc_seguimiento.db
+
+# Remitentes autorizados para enviar confirmaciones
+ALLOWED_CONFIRMATION_SENDERS=kontroltravel@ideasfractal.com,v.rodriguezy@gmail.com,cuchohbk@gmail.com
+
+# Clientes que requieren OC (opcional si usas Excel)
+AGENCIES_REQUIRING_OC=WALVIS S.A.,EMPRESA CORPORATIVA LTDA
 
 
 🎯 FLUJO DEL SISTEMA
 ═══════════════════════════════════════════════════════════════════════════
 
-1. Cliente hace reserva → HotelSales envía PDF por correo
-2. Sistema detecta correo → Extrae datos del PDF
-3. Verifica si cliente requiere OC → Crea registro
-4. Envía solicitud automática → DÍA 0
-5. Si no responde → Recordatorio DÍA 2
-6. Si no responde → Ultimátum DÍA 4
-7. Cliente envía OC → Sistema detecta y marca como recibida
-8. Detiene recordatorios → Proceso completo
+1. Cliente hace reserva → Kontrol Travel envía PDF confirmación por correo
+2. Sistema detecta correo → Extrae datos del PDF (13+ formatos de monto)
+3. Verifica si cliente requiere OC → Consulta BD (79 clientes configurados)
+4. Crea registro en BD → Estado: PENDIENTE
+5. Envía solicitud automática → DÍA 0 (desde email_origen_fecha)
+6. Si no responde → Recordatorio DÍA 2
+7. Si no responde → Ultimátum DÍA 4
+8. Cliente envía OC → Sistema detecta por múltiples patrones:
+   - "Reserva CODIGO"
+   - "LOC CODIGO"
+   - "Orden de Compra CODIGO"
+   - "OC CODIGO"
+9. Marca como recibida → Estado: RECIBIDA
+10. Detiene recordatorios → Proceso completo
 
 
 📧 CORREOS DE PRUEBA
 ═══════════════════════════════════════════════════════════════════════════
 
-Enviar a: cuenta1@gmail.com (tu casilla de monitoreo)
+Enviar a: seguimientoocx@gmail.com (tu casilla de monitoreo)
 
 CONFIRMACIÓN DE RESERVA:
   Asunto: Confirmación de Reserva Hotel
-  Adjunto: resumen del servicio.pdf
+  ó: Resumen del Servicio
+  ó: Reserva confirmada
+  Adjunto: PDF con datos de reserva (campos requeridos: id_reserva, loc_interno, agencia, monto_total)
+
+  ⚠️  El PDF debe contener:
+      - ID o LOC Interno
+      - Nombre de agencia (exacto según BD)
+      - Monto (soporta 13+ formatos)
+      - Hotel, fechas (opcional pero recomendado)
 
 ORDEN DE COMPRA:
-  Asunto: OC para Reserva ID 45215412
+  Asunto: OC para Reserva AAFVDUA
+  ó: Orden de Compra - Reserva AAFVDUA
+  ó: OC AAFVDUA
+  ó: LOC TEST2024001 - Adjunto OC
   Adjunto: Cualquier PDF
 
 
-🌐 INTERFAZ WEB
+🌐 INTERFAZ WEB (Nuevas vistas v1.3.0)
 ═══════════════════════════════════════════════════════════════════════════
 
-Dashboard:  http://localhost:8001
-API REST:   http://localhost:8001/api/stats
-Docs API:   http://localhost:8001/docs
+Dashboard:       http://localhost:8001              # Dashboard principal
+Reservas:        http://localhost:8001/reservas     # Vista completa con filtros
+Clientes:        http://localhost:8001/clientes     # Gestión de 79 clientes
+API REST:        http://localhost:8001/api/stats    # Estadísticas JSON
+Documentación:   http://localhost:8001/docs         # Swagger UI
 
 
 📊 API REST ÚTIL
 ═══════════════════════════════════════════════════════════════════════════
 
-curl http://localhost:8001/api/health        # Health check
-curl http://localhost:8001/api/stats         # Estadísticas
-curl http://localhost:8001/api/reservas      # Listar reservas
+# Health check
+curl http://localhost:8001/api/health
+
+# Estadísticas del sistema
+curl http://localhost:8001/api/stats
+
+# Listar todas las reservas
+curl http://localhost:8001/api/reservas
+
+# Solo reservas pendientes
+curl http://localhost:8001/api/reservas?estado=pendiente
+
+# Listar clientes configurados
+curl http://localhost:8001/api/clientes
+
+# Procesar correos manualmente
+curl -X POST http://localhost:8001/api/process-now
 
 
-🐛 DEPURACIÓN
+🐛 DEPURACIÓN Y LOGS
 ═══════════════════════════════════════════════════════════════════════════
 
-Ver logs:
-  tail -f logs/oc_seguimiento_*.log
+Ver logs en tiempo real:
+  ./scripts/gestion/gestionar_sistema.sh logs
+  # O directamente:
+  tail -f logs/sistema.log
 
-Verificar instalación:
-  python verify_install.py
+Ver estado del sistema:
+  ./scripts/gestion/gestionar_sistema.sh status
 
-Probar configuración:
+Verificar correos en inbox:
+  python scripts/testing/check_inbox.py
+
+Verificar configuración:
   python config.py
 
-Probar PDF:
-  python test_pdf.py "resumen del servicio.pdf"
+Verificar base de datos:
+  python scripts/database/limpiar_base_datos.py --stats
+
+
+🗄️  BASE DE DATOS (Nueva ubicación v1.3.0)
+═══════════════════════════════════════════════════════════════════════════
+
+Ubicación:     data/oc_seguimiento.db
+Clientes:      79 clientes configurados desde Excel
+Reservas:      Todas las reservas procesadas
+OC:            Órdenes de compra recibidas
+
+Gestionar datos:
+  python scripts/database/limpiar_base_datos.py        # Menú interactivo
+  python scripts/database/limpiar_base_datos.py --stats   # Ver estadísticas
+  python scripts/database/limpiar_base_datos.py --list    # Listar reservas
+  python scripts/database/limpiar_base_datos.py --test    # Eliminar TEST*
+  python scripts/database/limpiar_base_datos.py --oc      # Eliminar solo OC
 
 
 💡 TIPS IMPORTANTES
@@ -122,24 +235,72 @@ Probar PDF:
 
 ✓ Usa CONTRASEÑAS DE APLICACIÓN de Gmail, no tu contraseña normal
 ✓ Activa "Verificación en 2 pasos" en Gmail primero
-✓ El nombre de agencia debe coincidir EXACTAMENTE con el PDF
+✓ El nombre de agencia debe coincidir con la configuración en BD
+✓ El sistema ahora usa email_origen_fecha como Día 0 (no fecha_creacion)
+✓ Los PDFs soportan 13+ formatos de monto (ver docs/DIAGRAMAS.md)
+✓ Todos los scripts deben ejecutarse desde la RAÍZ del proyecto
 ✓ Para pruebas rápidas: DAYS_FOR_REMINDER_1=0 y DAYS_FOR_REMINDER_2=0
-✓ El sistema verifica correos cada 60 segundos por defecto
+✓ El sistema verifica correos cada 60 segundos (IMAP_CHECK_INTERVAL=60)
 
 
-❓ AYUDA
+📂 ESTRUCTURA DEL PROYECTO v1.3.0
 ═══════════════════════════════════════════════════════════════════════════
 
-1. Lee INICIO_RAPIDO.md para comenzar
-2. Lee GUIA_PRUEBA_LOCAL.md para guía detallada
-3. Lee README.md para documentación completa
-4. Revisa logs/ para depurar problemas
+envia2/
+├── app.py, config.py, database.py    # Archivos principales
+├── src/                               # Código fuente
+├── templates/                         # HTML (dashboard, reservas, clientes)
+├── scripts/                           # Scripts organizados por función
+│   ├── gestion/                       # Gestión del sistema
+│   ├── database/                      # Scripts de base de datos
+│   ├── testing/                       # Scripts de prueba
+│   └── utils/                         # Utilidades generales
+├── docs/                              # Documentación categorizada
+│   ├── inicio-rapido/                 # Estás aquí
+│   ├── arquitectura/
+│   ├── cliente/
+│   ├── configuracion/
+│   └── troubleshooting/
+├── data/                              # Base de datos y datos del sistema
+├── tests/                             # Tests automatizados
+└── logs/                              # Logs del sistema
+
+Ver ESTRUCTURA_PROYECTO.md para detalles completos.
+
+
+❓ AYUDA Y SOPORTE
+═══════════════════════════════════════════════════════════════════════════
+
+1. Lee docs/inicio-rapido/INICIO_RAPIDO.md para comenzar
+2. Lee docs/inicio-rapido/GUIA_PRUEBA_LOCAL.md para guía detallada
+3. Lee README.md para documentación completa del sistema
+4. Lee docs/troubleshooting/TROUBLESHOOTING.md para solucionar problemas
+5. Lee scripts/README.md para documentación de scripts
+6. Revisa logs/ para depurar problemas específicos
+
+
+🆕 NOVEDADES v1.3.0
+═══════════════════════════════════════════════════════════════════════════
+
+✨ Reorganización completa del proyecto con estructura profesional
+✨ Sistema de gestión integrado (gestionar_sistema.sh)
+✨ Scripts organizados en 4 categorías
+✨ Documentación categorizada por tipo y audiencia
+✨ Nueva vista /reservas con filtros y búsqueda
+✨ Nueva vista /clientes para gestión de 79 clientes
+✨ Diagrama de estructura del proyecto
+✨ Base de datos centralizada en data/
 
 
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║  🎉 ¡Listo para empezar!                                                 ║
 ║                                                                          ║
-║  Ejecuta: ./setup.sh                                                     ║
-║  Luego:   python app.py                                                  ║
-║  Abre:    http://localhost:8001                                          ║
+║  1. Configura .env con tus credenciales Gmail                            ║
+║  2. Ejecuta: python scripts/database/crear_bd.py                         ║
+║  3. Inicia:  ./scripts/gestion/gestionar_sistema.sh start                ║
+║  4. Abre:    http://localhost:8001                                       ║
+║                                                                          ║
+║  📖 Documentación completa: docs/README.md                               ║
 ╚══════════════════════════════════════════════════════════════════════════╝
+
+Versión: 1.3.0 | Última actualización: 8 de Diciembre de 2024

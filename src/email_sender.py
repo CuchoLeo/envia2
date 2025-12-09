@@ -15,7 +15,7 @@ from loguru import logger
 from sqlalchemy.orm import Session
 
 from config import settings
-from database import Reserva, CorreoEnviado, TipoCorreo, EstadoEnvio
+from database import Reserva, CorreoEnviado, TipoCorreo, EstadoEnvio, ConfiguracionCliente
 
 
 class EmailSender:
@@ -133,6 +133,34 @@ class EmailSender:
             self.logger.error(f"Error renderizando plantilla {template_name}: {e}")
             raise
 
+    def _get_cliente_email(self, reserva: Reserva, db: Session) -> Optional[str]:
+        """
+        Obtiene el email de contacto del cliente desde configuracion_clientes
+
+        Args:
+            reserva: Objeto Reserva
+            db: Sesión de base de datos
+
+        Returns:
+            Email de contacto del cliente o None si no está configurado
+        """
+        try:
+            cliente = db.query(ConfiguracionCliente).filter_by(
+                nombre_agencia=reserva.agencia
+            ).first()
+
+            if cliente and cliente.email_contacto:
+                return cliente.email_contacto
+            else:
+                self.logger.warning(
+                    f"No se encontró email de contacto para agencia: {reserva.agencia}"
+                )
+                return None
+
+        except Exception as e:
+            self.logger.error(f"Error obteniendo email del cliente: {e}")
+            return None
+
     def send_solicitud_inicial(
         self,
         reserva: Reserva,
@@ -145,7 +173,7 @@ class EmailSender:
         Args:
             reserva: Objeto Reserva
             db: Sesión de base de datos
-            to_email: Email del destinatario (opcional, se puede inferir)
+            to_email: Email del destinatario (opcional, se busca en configuracion_clientes)
 
         Returns:
             True si se envió exitosamente
@@ -158,8 +186,28 @@ class EmailSender:
 
         # Determinar destinatario
         if not to_email:
-            # TODO: Buscar email de contacto de la agencia en ConfiguracionCliente
-            to_email = "contacto@agencia.com"  # Placeholder
+            to_email = self._get_cliente_email(reserva, db)
+
+            if not to_email:
+                error_msg = f"No hay email de contacto configurado para {reserva.agencia}"
+                self.logger.error(error_msg)
+
+                # Registrar el intento fallido en BD
+                correo = CorreoEnviado(
+                    reserva_id=reserva.id,
+                    tipo_correo=TipoCorreo.SOLICITUD_INICIAL,
+                    destinatario="SIN EMAIL",
+                    asunto=f"Solicitud de Orden de Compra - Reserva {reserva.id_reserva}",
+                    cuerpo_html=html_body,
+                    estado=EstadoEnvio.ERROR,
+                    fecha_programado=datetime.utcnow(),
+                    fecha_error=datetime.utcnow(),
+                    mensaje_error=error_msg,
+                    intentos=1
+                )
+                db.add(correo)
+                db.commit()
+                return False
 
         # Enviar correo
         subject = f"Solicitud de Orden de Compra - Reserva {reserva.id_reserva}"
@@ -198,12 +246,43 @@ class EmailSender:
         db: Session,
         to_email: Optional[str] = None
     ) -> bool:
-        """Envía recordatorio del día 2"""
+        """
+        Envía recordatorio del día 2
+
+        Args:
+            reserva: Objeto Reserva
+            db: Sesión de base de datos
+            to_email: Email del destinatario (opcional, se busca en configuracion_clientes)
+
+        Returns:
+            True si se envió exitosamente
+        """
         context = self._prepare_context(reserva)
         html_body = self.render_template('recordatorio_dia2.html', context)
 
         if not to_email:
-            to_email = "contacto@agencia.com"  # Placeholder
+            to_email = self._get_cliente_email(reserva, db)
+
+            if not to_email:
+                error_msg = f"No hay email de contacto configurado para {reserva.agencia}"
+                self.logger.error(error_msg)
+
+                # Registrar el intento fallido en BD
+                correo = CorreoEnviado(
+                    reserva_id=reserva.id,
+                    tipo_correo=TipoCorreo.RECORDATORIO_DIA_2,
+                    destinatario="SIN EMAIL",
+                    asunto=f"Recordatorio - OC Pendiente - Reserva {reserva.id_reserva}",
+                    cuerpo_html=html_body,
+                    estado=EstadoEnvio.ERROR,
+                    fecha_programado=datetime.utcnow(),
+                    fecha_error=datetime.utcnow(),
+                    mensaje_error=error_msg,
+                    intentos=1
+                )
+                db.add(correo)
+                db.commit()
+                return False
 
         subject = f"Recordatorio - OC Pendiente - Reserva {reserva.id_reserva}"
 
@@ -240,12 +319,43 @@ class EmailSender:
         db: Session,
         to_email: Optional[str] = None
     ) -> bool:
-        """Envía ultimátum del día 4"""
+        """
+        Envía ultimátum del día 4
+
+        Args:
+            reserva: Objeto Reserva
+            db: Sesión de base de datos
+            to_email: Email del destinatario (opcional, se busca en configuracion_clientes)
+
+        Returns:
+            True si se envió exitosamente
+        """
         context = self._prepare_context(reserva)
         html_body = self.render_template('ultimatum_dia4.html', context)
 
         if not to_email:
-            to_email = "contacto@agencia.com"  # Placeholder
+            to_email = self._get_cliente_email(reserva, db)
+
+            if not to_email:
+                error_msg = f"No hay email de contacto configurado para {reserva.agencia}"
+                self.logger.error(error_msg)
+
+                # Registrar el intento fallido en BD
+                correo = CorreoEnviado(
+                    reserva_id=reserva.id,
+                    tipo_correo=TipoCorreo.ULTIMATUM_DIA_4,
+                    destinatario="SIN EMAIL",
+                    asunto=f"🚨 URGENTE - Ultimátum OC - Reserva {reserva.id_reserva}",
+                    cuerpo_html=html_body,
+                    estado=EstadoEnvio.ERROR,
+                    fecha_programado=datetime.utcnow(),
+                    fecha_error=datetime.utcnow(),
+                    mensaje_error=error_msg,
+                    intentos=1
+                )
+                db.add(correo)
+                db.commit()
+                return False
 
         subject = f"🚨 URGENTE - Ultimátum OC - Reserva {reserva.id_reserva}"
 
@@ -324,7 +434,10 @@ class EmailSender:
 
         # Determinar destinatario
         if not destinatario:
-            destinatario = "contacto@agencia.com"  # Placeholder
+            # Sin db no podemos buscar el email, retornar error
+            error_msg = "No se proporcionó destinatario y no hay sesión de BD para buscarlo"
+            self.logger.error(error_msg)
+            return False
 
         # Asunto según tipo
         asuntos = {

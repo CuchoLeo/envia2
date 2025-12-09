@@ -487,7 +487,103 @@ erDiagram
 - `CANCELADA` - Reserva cancelada manualmente
 - `EXPIRADA` - Check-in pasó sin recibir OC
 
+## 8. Diagrama de Estructura del Proyecto
+
+```mermaid
+graph TB
+    ROOT[📦 envia2/]
+
+    ROOT --> APP[app.py<br/>🚀 Aplicación principal]
+    ROOT --> CONFIG[config.py<br/>⚙️ Configuración]
+    ROOT --> DB[database.py<br/>💾 Modelos BD]
+
+    ROOT --> SRC[src/<br/>📦 Código fuente]
+    SRC --> SRC_EMAIL[email_monitor.py<br/>email_sender.py]
+    SRC --> SRC_PDF[pdf_processor.py<br/>imap_wrapper.py]
+    SRC --> SRC_SCHED[scheduler.py]
+
+    ROOT --> TEMPLATES[templates/<br/>🎨 HTML Templates]
+    TEMPLATES --> TEMP_DASH[dashboard.html<br/>reservas.html]
+    TEMPLATES --> TEMP_EMAIL[solicitud_inicial.html<br/>recordatorio_dia2.html<br/>ultimatum_dia4.html]
+
+    ROOT --> SCRIPTS[scripts/<br/>🔧 Scripts utilitarios]
+    SCRIPTS --> SCR_GEST[gestion/<br/>gestionar_sistema.sh<br/>detener_sistema.py]
+    SCRIPTS --> SCR_DB[database/<br/>crear_bd.py<br/>limpiar_base_datos.py]
+    SCRIPTS --> SCR_TEST[testing/<br/>check_inbox.py<br/>generar_pdf_prueba.py]
+    SCRIPTS --> SCR_UTIL[utils/<br/>test_conexion.py<br/>configurar_cliente.py]
+
+    ROOT --> DOCS[docs/<br/>📚 Documentación]
+    DOCS --> DOC_ARQ[arquitectura/<br/>FLUJO_SISTEMA.md]
+    DOCS --> DOC_CLI[cliente/<br/>RESUMEN_PARA_CLIENTE.md]
+    DOCS --> DOC_CONF[configuracion/<br/>CONFIGURACION_GMAIL.md]
+    DOCS --> DOC_TROUBLE[troubleshooting/<br/>TROUBLESHOOTING.md]
+
+    ROOT --> DATA[data/<br/>💾 Datos del sistema]
+    DATA --> DATA_DB[oc_seguimiento.db<br/>clientes.xlsx]
+    DATA --> DATA_RES[reservas_prueba/<br/>PDFs de prueba]
+
+    ROOT --> TESTS[tests/<br/>🧪 Tests]
+    TESTS --> TEST_FILES[test_flujo_completo.py<br/>test_pdf.py]
+
+    ROOT --> LOGS[logs/<br/>📋 Logs del sistema]
+    ROOT --> DEP[deprecated/<br/>🗄️  Código antiguo]
+
+    style APP fill:#3498db,color:#fff
+    style CONFIG fill:#3498db,color:#fff
+    style DB fill:#3498db,color:#fff
+    style SRC fill:#2ecc71,color:#fff
+    style TEMPLATES fill:#9b59b6,color:#fff
+    style SCRIPTS fill:#e67e22,color:#fff
+    style DOCS fill:#f39c12,color:#fff
+    style DATA fill:#e74c3c,color:#fff
+    style TESTS fill:#16a085,color:#fff
+    style LOGS fill:#95a5a6,color:#fff
+    style DEP fill:#7f8c8d,color:#fff
+```
+
+### Descripción de la Estructura
+
+**Archivos Principales (Raíz)**
+- `app.py` - Aplicación FastAPI principal, punto de entrada del sistema
+- `config.py` - Configuración centralizada con pydantic-settings
+- `database.py` - Modelos SQLAlchemy y gestión de BD
+
+**Módulos del Sistema (`src/`)**
+- `email_monitor.py` - Monitoreo IMAP de confirmaciones y OC
+- `email_sender.py` - Envío de correos via SMTP
+- `pdf_processor.py` - Extracción de datos de PDFs
+- `imap_wrapper.py` - Wrapper de conexión IMAP
+- `scheduler.py` - Tareas programadas con APScheduler
+
+**Plantillas Web (`templates/`)**
+- `dashboard.html` - Dashboard principal con estadísticas
+- `reservas.html` - Vista completa de reservas con filtros
+- `clientes.html` - Gestión de clientes
+- `solicitud_inicial.html`, `recordatorio_dia2.html`, `ultimatum_dia4.html` - Templates de emails
+
+**Scripts Organizados (`scripts/`)**
+- `gestion/` - Gestión del sistema (start/stop/status)
+- `database/` - Scripts de base de datos
+- `testing/` - Scripts de prueba y diagnóstico
+- `utils/` - Utilidades generales
+
+**Documentación (`docs/`)**
+- `arquitectura/` - Documentación técnica
+- `cliente/` - Documentación para usuarios
+- `configuracion/` - Guías de configuración
+- `troubleshooting/` - Solución de problemas
+- `inicio-rapido/` - Guías de inicio
+- `git/` - Instrucciones de Git
+
+**Datos (`data/`)**
+- Base de datos SQLite
+- Archivo Excel de clientes
+- PDFs de prueba y reservas
+
+**Tests (`tests/`)**
+- Tests automatizados del sistema
+
 ---
 
-**Versión**: 1.1.1
-**Última actualización**: 2025-11-20
+**Versión**: 1.3.0
+**Última actualización**: 2024-12-08

@@ -2,9 +2,11 @@
 
 Sistema automatizado para gestionar el seguimiento de órdenes de compra en reservas hoteleras corporativas.
 
-**Versión**: 1.1.1 | **Estado**: Producción | **Cliente**: Kontrol Travel
+**Versión**: 1.3.3 | **Estado**: Producción | **Cliente**: Kontrol Travel | **Última Actualización**: 9 de Diciembre de 2024
 
 📄 **[Ver Alcance Completo del Proyecto →](./ALCANCE_PROYECTO.md)**
+
+⚠️ **NUEVO en v1.3.3**: Sistema de emails configurado por cliente. **[Ver Próximos Pasos →](./PROXIMOS_PASOS_EMAILS.md)**
 
 ## 📖 Descripción
 
@@ -23,7 +25,10 @@ Este sistema independiente monitorea automáticamente los correos de confirmaci�
 
 ### 🔄 Monitoreo Automático
 - Monitoreo continuo de casillas IMAP para nuevas reservas
-- Extracción automática de datos de PDFs adjuntos
+- **Extracción automática mejorada** de datos de PDFs adjuntos
+  - **13+ formatos de monto soportados**: Total, Monto Total, Total a Pagar, Precio Total, etc.
+  - Detección flexible con múltiples patrones y fallback automático
+  - Logs informativos del patrón que detectó cada campo
 - Detección de órdenes de compra recibidas por correo
 - Patrones flexibles de detección:
   - "Reserva CODIGO" - ej: "Orden de Compra - Reserva AAFVDUA"
@@ -45,14 +50,24 @@ Este sistema independiente monitorea automáticamente los correos de confirmaci�
 - Configuración flexible por cliente
 
 ### 🎯 Interfaz Web de Administración
-- Dashboard con estadísticas en tiempo real
-- Visualización de reservas pendientes
+- **Dashboard principal** con estadísticas en tiempo real
+- **Vista de Reservas** (`/reservas`) - Gestión completa con filtros y búsqueda
+  - Filtros por estado (Pendientes, Recibidas, Todas)
+  - Búsqueda en tiempo real por ID, agencia, hotel
+  - Estadísticas dinámicas
+- **Vista de Clientes** (`/clientes`) - Configuración de clientes
+  - **78 clientes configurados** en base de datos
+  - Filtros por requiere/no requiere OC
+  - Estadísticas completas (40 requieren OC, 38 no requieren)
+  - **Sistema de emails configurables** por cliente (v1.3.3)
 - Acciones manuales (marcar OC recibida, reenviar correos)
-- API REST completa
+- **API REST completa** documentada
 
 ## 🏗️ Arquitectura del Sistema
 
-Para una visualización completa con diagramas interactivos, ver **[DIAGRAMAS.md](./DIAGRAMAS.md)**
+📊 **Ver documentación de diagramas completa:**
+- **[FLUJO_DETALLADO_SISTEMA.md](./docs/FLUJO_DETALLADO_SISTEMA.md)** - Diagramas detallados de flujos y configuraciones (v1.3.3)
+- **[DIAGRAMAS.md](./DIAGRAMAS.md)** - Diagramas de arquitectura general
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -210,64 +225,114 @@ curl -X POST http://localhost:8001/api/process-now
 
 Documentación completa de la API: **http://localhost:8001/docs**
 
+📮 **¿Primera vez usando APIs?** Ver la **[Guía de Postman para Principiantes](./docs/GUIA_POSTMAN_BASICA.md)**
+
 ## 📁 Estructura del Proyecto
 
 ```
 envia2/
-├── app.py                      # Aplicación principal FastAPI
-├── config.py                   # Configuración central
-├── database.py                 # Modelos SQLAlchemy
+├── README.md                   # Esta documentación
+├── CHANGELOG.md                # Historial de cambios (v1.3.3)
+├── PROXIMOS_PASOS_EMAILS.md    # 📧 Estado y próximos pasos emails (v1.3.3)
 ├── requirements.txt            # Dependencias Python
 ├── .env                        # Configuración (no en Git)
 ├── .env.example                # Ejemplo de configuración
-├── README.md                   # Esta documentación
-├── LISTA_IMPLEMENTACION_CLIENTE.md  # Guía de implementación
 │
-├── src/                        # Módulos principales
+├── app.py                      # 🚀 Aplicación principal FastAPI
+├── config.py                   # ⚙️ Configuración central
+├── database.py                 # 💾 Modelos SQLAlchemy
+│
+├── src/                        # 📦 Código fuente principal
 │   ├── email_monitor.py        # Monitoreo de emails (IMAP)
 │   ├── email_sender.py         # Envío de emails (SMTP)
 │   ├── imap_wrapper.py         # Wrapper de conexión IMAP
 │   ├── pdf_processor.py        # Extracción de datos de PDF
 │   └── scheduler.py            # Tareas programadas (APScheduler)
 │
-├── scripts/                    # Scripts útiles
-│   ├── configurar_cliente.py  # Configuración interactiva
-│   ├── test_conexion.py       # Verificar conexiones IMAP/SMTP
-│   ├── enviar_solicitud_oc.py # Envío manual de solicitudes
-│   ├── marcar_no_leido.py     # Utilidad para testing
-│   └── verificar_emails.py    # Verificar emails recibidos
+├── templates/                  # 🎨 Plantillas HTML (Jinja2)
+│   ├── dashboard.html          # Dashboard principal
+│   ├── reservas.html           # Vista de todas las reservas
+│   ├── clientes.html           # Gestión de clientes
+│   ├── solicitud_inicial.html  # Template email día 0
+│   ├── recordatorio_dia2.html  # Template email día 2
+│   └── ultimatum_dia4.html     # Template email día 4
 │
-├── tests/                      # Tests
+├── scripts/                    # 🔧 Scripts utilitarios
+│   ├── README.md               # Documentación de scripts
+│   ├── gestion/                # Gestión del sistema
+│   │   ├── gestionar_sistema.sh    # Script principal (start/stop/status)
+│   │   ├── detener_sistema.py      # Detener sistema (Python)
+│   │   └── detener_sistema.sh      # Detener sistema (Bash)
+│   ├── database/               # Scripts de base de datos
+│   │   ├── crear_bd.py             # Crear/inicializar BD
+│   │   ├── limpiar_base_datos.py   # Limpiar datos de prueba
+│   │   └── cargar_clientes_excel.py # Importar clientes desde Excel
+│   ├── testing/                # Scripts de prueba
+│   │   ├── check_inbox.py          # Verificar emails en inbox
+│   │   ├── generar_pdf_prueba.py   # Generar PDFs de prueba
+│   │   ├── marcar_correos_no_leidos.py
+│   │   ├── verificar_correos.py
+│   │   └── verificar_reservas.py
+│   └── utils/                  # Utilidades generales
+│       ├── configurar_cliente.py         # Configuración interactiva
+│       ├── actualizar_emails_clientes.py # 📧 Actualizar emails de contacto (v1.3.3)
+│       ├── test_conexion.py              # Verificar conexiones IMAP/SMTP
+│       ├── enviar_solicitud_oc.py        # Envío manual de solicitudes
+│       └── verificar_emails.py           # Verificar emails recibidos
+│
+├── tests/                      # 🧪 Tests automatizados
 │   ├── test_flujo_completo.py # Test end-to-end
 │   └── test_pdf.py            # Test procesador PDF
 │
-├── templates/                  # Plantillas de emails HTML
-│   ├── solicitud_inicial.html  # Email día 0
-│   ├── recordatorio_1.html     # Email día 2
-│   ├── recordatorio_2.html     # Email día 4
-│   └── ultimatum.html          # Email día 6+
+├── docs/                       # 📚 Documentación completa
+│   ├── README.md               # Índice de documentación
+│   ├── ALCANCE_PROYECTO.md     # Alcance y objetivos
+│   ├── DIAGRAMAS.md            # Diagramas del sistema
+│   ├── SCRIPTS_GESTION.md      # Documentación de scripts
+│   ├── LISTA_IMPLEMENTACION_CLIENTE.md  # Tareas de implementación
+│   ├── CAMBIO_EMAIL_CONTACTO.md         # 📧 Documentación técnica emails (v1.3.3)
+│   ├── GUIA_ACTUALIZACION_EMAILS.md     # 📧 Guía de actualización emails (v1.3.3)
+│   ├── arquitectura/           # Arquitectura del sistema
+│   │   ├── FLUJO_SISTEMA.md
+│   │   ├── ANALISIS_MODELO_DATOS.md    # 📊 Análisis completo del modelo de datos
+│   │   └── COMPARATIVA_ARQUITECTURAS_GCP.md
+│   ├── configuracion/          # Guías de configuración
+│   │   └── CONFIGURACION_GMAIL.md
+│   ├── cliente/                # Docs para el cliente
+│   │   ├── RESUMEN_PARA_CLIENTE.md
+│   │   ├── PLAN_PRUEBAS_CLIENTE.md
+│   │   └── SOLICITUD_INFO_CLIENTE.md
+│   ├── inicio-rapido/          # Guías de inicio
+│   │   ├── LEEME_PRIMERO.txt
+│   │   ├── INICIO_RAPIDO.md
+│   │   └── GUIA_PRUEBA_LOCAL.md
+│   ├── git/
+│   │   └── INSTRUCCIONES_GIT.md
+│   └── troubleshooting/        # Solución de problemas
+│       ├── TROUBLESHOOTING.md
+│       ├── ERRORES_COMUNES.md
+│       ├── SOLUCION_0_CORREOS.md
+│       └── SOLUCION_PYTHON314.txt
 │
-├── docs/                       # Documentación
-│   ├── FLUJO_SISTEMA.md        # Flujo completo del sistema
-│   ├── CONFIGURACION_GMAIL.md  # Setup de Gmail
-│   ├── SOLICITUD_INFO_CLIENTE.md  # Formulario cliente
-│   ├── RESUMEN_PARA_CLIENTE.md    # Resumen ejecutivo
-│   └── PLAN_PRUEBAS_CLIENTE.md    # Plan de testing
-│
-├── data/                       # Datos del sistema
+├── data/                       # 💾 Datos del sistema
 │   ├── oc_seguimiento.db       # Base de datos SQLite
-│   ├── confirmaciones/         # PDFs de confirmaciones
-│   └── oc/                     # PDFs de OC recibidas
+│   ├── emails_clientes_template.csv  # 📧 Plantilla para actualizar emails (v1.3.3)
+│   ├── clientes.xlsx           # Archivo de clientes
+│   ├── reservas_prueba/        # PDFs de prueba
+│   └── clientes_backup/        # Backup de configuraciones
 │
-├── logs/                       # Logs del sistema
-├── static/                     # Archivos estáticos web
+├── logs/                       # 📋 Logs del sistema
+├── static/                     # 🌐 Archivos estáticos web
 │
-└── deprecated/                 # Arquitecturas antiguas (no usar)
+└── deprecated/                 # 🗄️  Código antiguo (no usar)
     ├── README.md               # Info sobre archivos deprecados
     ├── integraciones/          # Integraciones obsoletas (API, n8n)
     ├── documentacion/          # Docs de sesiones antiguas
-    ├── scripts_diagnostico/    # Scripts de diagnóstico
+    ├── scripts_diagnostico/    # Scripts de diagnóstico antiguos
     └── tests_desarrollo/       # Tests de desarrollo
+
+**Nota**: Ver `docs/README.md` para el índice completo de documentación.
+**Nota**: Ver `scripts/README.md` para detalles de uso de los scripts.
 ```
 
 ## ⚙️ Configuración Avanzada
@@ -422,7 +487,7 @@ CMD ["python", "app.py"]
 
 Ver documentación detallada en el directorio `deployment/` del proyecto principal.
 
-## 🧪 Testing
+## 🧪 Testing y Utilidades
 
 ### Probar extracción de PDF
 
@@ -436,10 +501,46 @@ python pdf_processor.py "resumen del servicio.pdf"
 python email_monitor.py
 ```
 
-### Probar renderizado de plantillas
+### Gestión de Base de Datos
 
 ```bash
-python email_sender.py
+# Modo interactivo - Menú completo
+python limpiar_base_datos.py
+
+# Ver estadísticas
+python limpiar_base_datos.py --stats
+
+# Listar todas las reservas
+python limpiar_base_datos.py --list
+
+# Eliminar reserva específica
+python limpiar_base_datos.py --id TEST2024001
+
+# Eliminar solo reservas de prueba (TEST*)
+python limpiar_base_datos.py --test
+
+# Eliminar TODAS las reservas (⚠️ cuidado)
+python limpiar_base_datos.py --all
+```
+
+### Cargar Clientes desde Excel
+
+```bash
+# Cargar/actualizar clientes desde docs/clientes.xlsx
+python cargar_clientes_excel.py
+```
+
+### Reprocesar Correos
+
+```bash
+# Marcar correos como no leídos para reprocesar
+python marcar_correos_no_leidos.py
+
+# Filtrar por remitente
+python marcar_correos_no_leidos.py --sender "email@ejemplo.com"
+
+# Filtrar por asunto
+python marcar_correos_no_leidos.py --subject "confirmación"
 ```
 
 ### Probar configuración completa
