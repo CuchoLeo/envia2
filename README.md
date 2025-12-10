@@ -2,9 +2,11 @@
 
 Sistema automatizado para gestionar el seguimiento de órdenes de compra en reservas hoteleras corporativas.
 
-**Versión**: 1.3.3 | **Estado**: Producción | **Cliente**: Kontrol Travel | **Última Actualización**: 9 de Diciembre de 2024
+**Versión**: 1.3.4 | **Estado**: Producción | **Cliente**: Kontrol Travel | **Última Actualización**: 9 de Diciembre de 2024
 
 📄 **[Ver Alcance Completo del Proyecto →](./ALCANCE_PROYECTO.md)**
+
+⚠️ **NUEVO en v1.3.4**: El flujo de seguimiento ahora se calcula desde la **Fecha de Emisión del PDF** en lugar de la fecha de llegada del correo. **[Ver Detalles →](./docs/CHANGELOG_FECHA_EMISION.md)**
 
 ⚠️ **NUEVO en v1.3.3**: Sistema de emails configurado por cliente. **[Ver Próximos Pasos →](./PROXIMOS_PASOS_EMAILS.md)**
 

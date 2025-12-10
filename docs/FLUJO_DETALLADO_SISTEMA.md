@@ -530,29 +530,33 @@ sequenceDiagram
 
 
 ═══════════════════════════════════════════════════════════════════════════
-  CÁLCULO DE días_desde_creacion ⭐ IMPORTANTE
+  CÁLCULO DE días_desde_creacion ⭐ IMPORTANTE (v1.3.4+)
 ═══════════════════════════════════════════════════════════════════════════
 
    @property
    def dias_desde_creacion(self) -> int:
-       # Usa email_origen_fecha como DÍA 0 (fecha del correo original)
-       fecha_referencia = self.email_origen_fecha or self.fecha_creacion
+       # Prioridad: fecha_emision (PDF) > email_origen_fecha > fecha_creacion
+       fecha_referencia = self.fecha_emision or self.email_origen_fecha or self.fecha_creacion
        return (datetime.utcnow() - fecha_referencia).days
 
-   Ejemplos:
-   ├─► Correo llegó: 2024-12-09 10:00
-   │   email_origen_fecha: 2024-12-09 10:00
+   Ejemplos con FECHA DE EMISIÓN (preferida):
+   ├─► Fecha Emisión PDF: 2024-12-05 00:00  ← DÍA 0
+   │   Correo llegó: 2024-12-09 10:00
+   │   fecha_referencia = fecha_emision = 2024-12-05
    │
-   │   Hoy: 2024-12-09 14:00
-   │   dias_desde_creacion = 0 días ──► Enviar SOLICITUD_INICIAL
-   │
-   │   Hoy: 2024-12-11 14:00
+   │   Hoy: 2024-12-07 14:00
    │   dias_desde_creacion = 2 días ──► Enviar RECORDATORIO_DIA_2
    │
-   │   Hoy: 2024-12-13 14:00
+   │   Hoy: 2024-12-09 14:00
    │   dias_desde_creacion = 4 días ──► Enviar ULTIMATUM_DIA_4
    │
-   └─► Si email_origen_fecha es NULL, usa fecha_creacion
+   └─► Si fecha_emision es "INMEDIATO" o NULL, usa email_origen_fecha
+       Si email_origen_fecha es NULL, usa fecha_creacion
+
+   Casos especiales:
+   • PDF dice "INMEDIATO" → fecha_emision = None → usa email_origen_fecha
+   • PDF sin campo fecha → fecha_emision = None → usa email_origen_fecha
+   • Fecha no parseable → fecha_emision = None → usa email_origen_fecha
 ```
 
 ---

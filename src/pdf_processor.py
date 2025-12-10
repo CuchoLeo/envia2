@@ -134,8 +134,17 @@ class PDFProcessor:
         fecha_emision_match = re.search(r'Fecha\s+Emision:\s*([^\n]+)', text, re.IGNORECASE)
         if fecha_emision_match:
             fecha_emision_str = fecha_emision_match.group(1).strip()
-            # Intentar parsear la fecha, si falla guardar como None
-            data['fecha_emision'] = self._parse_spanish_date(fecha_emision_str) or datetime.now()
+            # Si dice "INMEDIATO" o está vacío, usar None (se usará fecha del correo como fallback)
+            if fecha_emision_str.upper() == "INMEDIATO" or not fecha_emision_str:
+                data['fecha_emision'] = None
+                self.logger.info(f"📅 Fecha emisión: INMEDIATO - se usará fecha de llegada del correo")
+            else:
+                # Intentar parsear la fecha, si falla guardar como None
+                data['fecha_emision'] = self._parse_spanish_date(fecha_emision_str)
+                if data['fecha_emision']:
+                    self.logger.info(f"📅 Fecha emisión extraída: {data['fecha_emision']}")
+                else:
+                    self.logger.warning(f"⚠️  No se pudo parsear fecha emisión: {fecha_emision_str}")
 
         # Extraer Nombre del Hotel
         hotel_match = re.search(r'(.*?Hotel.*?)(?=\n|Total:)', text, re.IGNORECASE)

@@ -99,7 +99,7 @@ class Reserva(Base):
     # Metadatos
     fecha_creacion = Column(DateTime, default=datetime.utcnow, nullable=False)
     fecha_actualizacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    fecha_emision = Column(String(50), nullable=True)
+    fecha_emision = Column(DateTime, nullable=True)  # Fecha de emisión del PDF (día 0 del flujo)
 
     # Datos del correo original
     email_origen_id = Column(String(200), nullable=True)
@@ -116,14 +116,14 @@ class Reserva(Base):
     @property
     def dias_desde_creacion(self) -> int:
         """
-        Calcula días desde que LLEGÓ el correo de confirmación (no desde la creación en BD)
-        Esta es la fecha correcta para el flujo de seguimiento de OC:
-        - Día 0: Llega el correo de confirmación
+        Calcula días desde la fecha de emisión del PDF (día 0 del flujo)
+        Fallback: fecha del correo, o fecha de creación en BD
+        - Día 0: Fecha de emisión del PDF (o llegada del correo si no está disponible)
         - Día 2: Primer recordatorio
         - Día 4: Ultimátum
         """
-        # Usar la fecha del correo original como referencia (día 0 del flujo)
-        fecha_referencia = self.email_origen_fecha or self.fecha_creacion
+        # Prioridad: fecha_emision del PDF > fecha del correo > fecha de creación en BD
+        fecha_referencia = self.fecha_emision or self.email_origen_fecha or self.fecha_creacion
         return (datetime.utcnow() - fecha_referencia).days
 
     @property
