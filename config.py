@@ -74,7 +74,7 @@ class Settings(BaseSettings):
 
     # Configuración de correos
     email_cc_recipients: str = Field(
-        default="administracion@ideasfractal.com",
+        default="",
         env="EMAIL_CC_RECIPIENTS"
     )
     days_for_reminder_1: int = Field(default=2, env="DAYS_FOR_REMINDER_1")

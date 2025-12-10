@@ -358,7 +358,7 @@ IMAP_CHECK_INTERVAL=300        # Verificar correos cada 5 minutos
 ### Agregar Destinatarios en Copia
 
 ```bash
-EMAIL_CC_RECIPIENTS=admin@ideasfractal.com,finanzas@ideasfractal.com
+EMAIL_CC_RECIPIENTS=administracion@tuempresa.com
 ```
 
 ### Configuración para Gmail

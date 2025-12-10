@@ -773,7 +773,7 @@ ALLOWED_CONFIRMATION_SENDERS=reservasonline@hotelsales.cl,v.rodriguezy@gmail.com
 ═══════════════════════════════════════════════════════════════════
   DESTINATARIOS EN COPIA
 ═══════════════════════════════════════════════════════════════════
-EMAIL_CC_RECIPIENTS=admin@ideasfractal.com,finanzas@ideasfractal.com
+EMAIL_CC_RECIPIENTS=administracion@tuempresa.com
                     # Todos los correos llevan copia a estos emails
 
 ═══════════════════════════════════════════════════════════════════
