@@ -17,7 +17,7 @@ from loguru import logger
 from sqlalchemy.orm import Session
 
 from config import settings
-from database import Reserva, OrdenCompra, EstadoOC, get_db
+from database import Reserva, OrdenCompra, EstadoOC, ConfiguracionCliente, get_db
 from src.pdf_processor import pdf_processor
 from src.imap_wrapper import SimpleIMAPClient
 
@@ -244,8 +244,26 @@ class ReservaMonitor(EmailMonitor):
 
                     # Verificar si la agencia requiere seguimiento de OC
                     agencia = pdf_data.get('agencia', '')
-                    # requiere_oc = settings.requires_oc(agencia)  # Comentado: Todas las reservas requieren OC
-                    requiere_oc = True  # TODAS las reservas requieren OC
+
+                    # Consultar configuración del cliente en la BD
+                    config_cliente = db.query(ConfiguracionCliente).filter_by(
+                        nombre_agencia=agencia,
+                        activo=True
+                    ).first()
+
+                    if config_cliente:
+                        requiere_oc = config_cliente.requiere_oc
+                        self.logger.info(
+                            f"🔍 Cliente {agencia}: requiere_oc={requiere_oc} "
+                            f"(según configuración en BD)"
+                        )
+                    else:
+                        # Cliente no existe en BD: NO requiere OC por defecto
+                        requiere_oc = False
+                        self.logger.warning(
+                            f"⚠️ Cliente {agencia} no encontrado en configuracion_clientes. "
+                            f"Se asume requiere_oc=False"
+                        )
 
                     # Verificar si ya existe la reserva
                     id_reserva = pdf_data.get('id_reserva')
