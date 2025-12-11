@@ -199,32 +199,35 @@ class OCScheduler:
 
     async def cleanup_expired_reservations(self):
         """
-        Limpia reservas expiradas (check-in pasado, sin OC)
+        Marca como expiradas las reservas que llevan más de 30 días sin OC
+        (calculado desde fecha_emision o email_origen_fecha)
         """
         self.logger.info("🧹 Limpiando reservas expiradas...")
 
         db = next(get_db())
 
         try:
-            now = datetime.utcnow()
-
-            # Reservas con check-in pasado y OC pendiente
-            expired = db.query(Reserva).filter(
-                Reserva.fecha_checkin < now,
+            # Obtener todas las reservas pendientes que requieren OC
+            pending_reservas = db.query(Reserva).filter(
                 Reserva.estado_oc == EstadoOC.PENDIENTE,
                 Reserva.requiere_oc == True
             ).all()
 
-            for reserva in expired:
-                self.logger.warning(
-                    f"⚠️ Reserva {reserva.id_reserva} expirada "
-                    f"(check-in: {reserva.fecha_checkin}, sin OC)"
-                )
-                reserva.estado_oc = EstadoOC.EXPIRADA
-                # TODO: Enviar notificación de expiración
+            expired_count = 0
+            # Usar la propiedad dias_desde_creacion que calcula correctamente
+            # desde fecha_emision > email_origen_fecha > fecha_creacion
+            for reserva in pending_reservas:
+                if reserva.dias_desde_creacion > 30:
+                    self.logger.warning(
+                        f"⚠️ Reserva {reserva.id_reserva} expirada "
+                        f"({reserva.dias_desde_creacion} días sin OC)"
+                    )
+                    reserva.estado_oc = EstadoOC.EXPIRADA
+                    expired_count += 1
+                    # TODO: Enviar notificación de expiración
 
             db.commit()
-            self.logger.info(f"✅ Limpieza completada: {len(expired)} reservas expiradas")
+            self.logger.info(f"✅ Limpieza completada: {expired_count} reservas expiradas")
 
         except Exception as e:
             self.logger.error(f"❌ Error en limpieza: {e}")
