@@ -1,0 +1,29 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   ⚠️  SISTEMA EN MODO PRUEBAS - RECORDATORIOS ACELERADOS    ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+PERIODOS CONFIGURADOS:
+  • Solicitud inicial: Inmediato (día 0)
+  • Recordatorio:      30 minutos después
+  • Ultimátum:         60 minutos (1 hora) después
+
+UBICACIÓN DE CAMBIOS:
+  database.py (líneas 170-197)
+
+DOCUMENTACIÓN:
+  docs/MODO_PRUEBAS_RECORDATORIOS.md
+
+PARA VOLVER A PRODUCCIÓN:
+  1. Editar database.py
+  2. Comentar propiedades de prueba (líneas 170-197)
+  3. Descomentar propiedades de producción (líneas 147-168)
+  4. Reiniciar sistema: ./scripts/gestion/gestionar_sistema.sh restart
+  5. Eliminar este archivo: rm MODO_PRUEBAS.txt
+
+PRODUCCIÓN USA:
+  • Recordatorio: 2 días
+  • Ultimátum:    4 días
+
+⚠️  NO USAR MODO PRUEBAS EN PRODUCCIÓN CON CLIENTES REALES

@@ -2,13 +2,27 @@
 
 Sistema automatizado para gestionar el seguimiento de órdenes de compra en reservas hoteleras corporativas.
 
-**Versión**: 1.3.4 | **Estado**: Producción | **Cliente**: Kontrol Travel | **Última Actualización**: 9 de Diciembre de 2024
+**Versión**: 1.3.7-PRUEBAS | **Estado**: 🧪 Modo Testing | **Cliente**: Kontrol Travel | **Última Actualización**: 10 de Diciembre de 2024
 
 📄 **[Ver Alcance Completo del Proyecto →](./ALCANCE_PROYECTO.md)**
 
-⚠️ **NUEVO en v1.3.4**: El flujo de seguimiento ahora se calcula desde la **Fecha de Emisión del PDF** en lugar de la fecha de llegada del correo. **[Ver Detalles →](./docs/CHANGELOG_FECHA_EMISION.md)**
+---
 
-⚠️ **NUEVO en v1.3.3**: Sistema de emails configurado por cliente. **[Ver Próximos Pasos →](./PROXIMOS_PASOS_EMAILS.md)**
+## 🧪 ⚠️ SISTEMA EN MODO PRUEBAS - RECORDATORIOS ACELERADOS
+
+**Periodos actuales**: Solicitud (T+0) → Recordatorio (T+30min) → Ultimátum (T+60min)
+
+**Producción usa**: Solicitud (Día 0) → Recordatorio (Día 2) → Ultimátum (Día 4)
+
+🔴 **NO USAR CON CLIENTES REALES EN ESTE MODO**
+
+📖 **[Ver Documentación Completa del Modo Pruebas →](./docs/MODO_PRUEBAS_RECORDATORIOS.md)** | **[Cómo Volver a Producción →](./docs/MODO_PRUEBAS_RECORDATORIOS.md#cómo-volver-a-modo-producción)**
+
+---
+
+⚠️ **NUEVO en v1.3.6**: Validación de OC desde tabla `configuracion_clientes` en lugar de hardcoded. **[Ver Detalles →](./docs/CHANGELOG_VALIDACION_OC.md)**
+
+⚠️ **NUEVO en v1.3.4**: El flujo de seguimiento ahora se calcula desde la **Fecha de Emisión del PDF** en lugar de la fecha de llegada del correo. **[Ver Detalles →](./docs/CHANGELOG_FECHA_EMISION.md)**
 
 ## 📖 Descripción
 

@@ -127,6 +127,15 @@ class Reserva(Base):
         return (datetime.utcnow() - fecha_referencia).days
 
     @property
+    def minutos_desde_creacion(self) -> int:
+        """
+        Calcula minutos transcurridos desde la fecha de emisión del PDF
+        Útil para pruebas con periodos cortos
+        """
+        fecha_referencia = self.fecha_emision or self.email_origen_fecha or self.fecha_creacion
+        return int((datetime.utcnow() - fecha_referencia).total_seconds() / 60)
+
+    @property
     def necesita_solicitud_inicial(self) -> bool:
         """Verifica si necesita envío de solicitud inicial"""
         return (
@@ -135,23 +144,55 @@ class Reserva(Base):
             and not any(c.tipo_correo == TipoCorreo.SOLICITUD_INICIAL for c in self.correos_enviados)
         )
 
+    # ============================================================================
+    # MODO PRODUCCIÓN - Recordatorios por días (COMENTADOS PARA PRUEBAS)
+    # ============================================================================
+    # @property
+    # def necesita_recordatorio_dia2(self) -> bool:
+    #     """Verifica si necesita recordatorio día 2"""
+    #     return (
+    #         self.requiere_oc
+    #         and self.estado_oc == EstadoOC.PENDIENTE
+    #         and self.dias_desde_creacion >= 2
+    #         and not any(c.tipo_correo == TipoCorreo.RECORDATORIO_DIA_2 for c in self.correos_enviados)
+    #     )
+    #
+    # @property
+    # def necesita_ultimatum_dia4(self) -> bool:
+    #     """Verifica si necesita ultimátum día 4"""
+    #     return (
+    #         self.requiere_oc
+    #         and self.estado_oc == EstadoOC.PENDIENTE
+    #         and self.dias_desde_creacion >= 4
+    #         and not any(c.tipo_correo == TipoCorreo.ULTIMATUM_DIA_4 for c in self.correos_enviados)
+    #     )
+
+    # ============================================================================
+    # MODO PRUEBAS - Recordatorios por minutos (ACTIVO)
+    # ============================================================================
     @property
     def necesita_recordatorio_dia2(self) -> bool:
-        """Verifica si necesita recordatorio día 2"""
+        """
+        MODO PRUEBAS: Verifica si necesita recordatorio después de 30 minutos
+        Para producción: cambiar minutos_desde_creacion >= 30 por dias_desde_creacion >= 2
+        """
         return (
             self.requiere_oc
             and self.estado_oc == EstadoOC.PENDIENTE
-            and self.dias_desde_creacion >= 2
+            and self.minutos_desde_creacion >= 30  # 30 minutos para pruebas
             and not any(c.tipo_correo == TipoCorreo.RECORDATORIO_DIA_2 for c in self.correos_enviados)
         )
 
     @property
     def necesita_ultimatum_dia4(self) -> bool:
-        """Verifica si necesita ultimátum día 4"""
+        """
+        MODO PRUEBAS: Verifica si necesita ultimátum después de 1 hora
+        Para producción: cambiar minutos_desde_creacion >= 60 por dias_desde_creacion >= 4
+        """
         return (
             self.requiere_oc
             and self.estado_oc == EstadoOC.PENDIENTE
-            and self.dias_desde_creacion >= 4
+            and self.minutos_desde_creacion >= 60  # 60 minutos (1 hora) para pruebas
             and not any(c.tipo_correo == TipoCorreo.ULTIMATUM_DIA_4 for c in self.correos_enviados)
         )
 
