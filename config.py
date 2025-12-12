@@ -28,11 +28,18 @@ class Settings(BaseSettings):
         env="DATABASE_URL"
     )
 
-    # IMAP - Monitoreo de confirmaciones
-    imap_host: str = Field(env="IMAP_HOST")
+    # Microsoft Graph API - Acceso a correos (reemplazo de IMAP)
+    azure_client_id: str = Field(default="", env="AZURE_CLIENT_ID")
+    azure_client_secret: str = Field(default="", env="AZURE_CLIENT_SECRET")
+    azure_tenant_id: str = Field(default="", env="AZURE_TENANT_ID")
+    graph_mailbox_email: str = Field(default="", env="GRAPH_MAILBOX_EMAIL")
+    use_graph_api: bool = Field(default=True, env="USE_GRAPH_API")  # True para Graph API, False para IMAP
+
+    # IMAP - Monitoreo de confirmaciones (DEPRECADO - usar Graph API)
+    imap_host: str = Field(default="", env="IMAP_HOST")
     imap_port: int = Field(default=993, env="IMAP_PORT")
-    imap_username: str = Field(env="IMAP_USERNAME")
-    imap_password: str = Field(env="IMAP_PASSWORD")
+    imap_username: str = Field(default="", env="IMAP_USERNAME")
+    imap_password: str = Field(default="", env="IMAP_PASSWORD")
     imap_mailbox: str = Field(default="INBOX", env="IMAP_MAILBOX")
     imap_use_ssl: bool = Field(default=True, env="IMAP_USE_SSL")
     imap_check_interval: int = Field(default=300, env="IMAP_CHECK_INTERVAL")
@@ -49,11 +56,11 @@ class Settings(BaseSettings):
     )
     smtp_use_tls: bool = Field(default=True, env="SMTP_USE_TLS")
 
-    # IMAP - Recepción de OC
-    oc_inbox_host: str = Field(env="OC_INBOX_HOST")
+    # IMAP - Recepción de OC (DEPRECADO - usar Graph API)
+    oc_inbox_host: str = Field(default="", env="OC_INBOX_HOST")
     oc_inbox_port: int = Field(default=993, env="OC_INBOX_PORT")
-    oc_inbox_username: str = Field(env="OC_INBOX_USERNAME")
-    oc_inbox_password: str = Field(env="OC_INBOX_PASSWORD")
+    oc_inbox_username: str = Field(default="", env="OC_INBOX_USERNAME")
+    oc_inbox_password: str = Field(default="", env="OC_INBOX_PASSWORD")
     oc_inbox_mailbox: str = Field(default="INBOX", env="OC_INBOX_MAILBOX")
     oc_inbox_use_ssl: bool = Field(default=True, env="OC_INBOX_USE_SSL")
     oc_check_interval: int = Field(default=300, env="OC_CHECK_INTERVAL")

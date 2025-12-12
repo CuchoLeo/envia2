@@ -9,9 +9,15 @@ python-multipart>=0.0.6
 # Base de datos
 sqlalchemy>=2.0.0
 
-# Procesamiento de correos IMAP
+# Procesamiento de correos
+# IMAP (deprecado - migrado a Graph API)
 # imapclient>=3.0.1  # Comentado - usamos wrapper personalizado para Python 3.14+
 email-validator>=2.1.0
+
+# Microsoft Graph API (reemplazo de IMAP)
+msal>=1.26.0
+msgraph-sdk>=1.2.0
+azure-identity>=1.15.0
 
 # Procesamiento de PDF
 PyPDF2>=3.0.1
