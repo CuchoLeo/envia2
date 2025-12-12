@@ -9,21 +9,30 @@ PERIODOS CONFIGURADOS:
   • Recordatorio:      30 minutos después
   • Ultimátum:         60 minutos (1 hora) después
 
-UBICACIÓN DE CAMBIOS:
-  database.py (líneas 170-197)
+SCHEDULER ACELERADO:
+  • Procesar correos pendientes: Cada 5 minutos (vs 6 horas en prod)
+  • Reintentar fallidos:          Cada 10 minutos (vs 2 horas en prod)
+
+ARCHIVOS MODIFICADOS:
+  • database.py (líneas 170-197) - Recordatorios por minutos
+  • src/scheduler.py (líneas 37-79) - Scheduler por minutos
 
 DOCUMENTACIÓN:
   docs/MODO_PRUEBAS_RECORDATORIOS.md
 
 PARA VOLVER A PRODUCCIÓN:
-  1. Editar database.py
-  2. Comentar propiedades de prueba (líneas 170-197)
-  3. Descomentar propiedades de producción (líneas 147-168)
-  4. Reiniciar sistema: ./scripts/gestion/gestionar_sistema.sh restart
-  5. Eliminar este archivo: rm MODO_PRUEBAS.txt
+  1. Editar database.py:
+     - Comentar líneas 170-197 (pruebas)
+     - Descomentar líneas 147-168 (producción)
+  2. Editar src/scheduler.py:
+     - Comentar líneas 59-79 (pruebas)
+     - Descomentar líneas 37-57 (producción)
+  3. Reiniciar sistema: ./scripts/gestion/gestionar_sistema.sh restart
+  4. Eliminar este archivo: rm MODO_PRUEBAS.txt
 
 PRODUCCIÓN USA:
-  • Recordatorio: 2 días
-  • Ultimátum:    4 días
+  • Recordatorio: Día 2 (48 horas)
+  • Ultimátum:    Día 4 (96 horas)
+  • Scheduler:    Cada 6 horas
 
 ⚠️  NO USAR MODO PRUEBAS EN PRODUCCIÓN CON CLIENTES REALES

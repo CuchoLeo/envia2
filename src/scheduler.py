@@ -34,22 +34,47 @@ class OCScheduler:
         """Inicia el scheduler con todas las tareas programadas"""
         self.logger.info("🚀 Iniciando scheduler de seguimiento de OC...")
 
-        # Tarea 1: Verificar y enviar correos pendientes (varias veces al día)
-        interval_hours = 24 / settings.scheduler_checks_per_day
+        # ========================================================================
+        # MODO PRODUCCIÓN - Intervalos por horas (COMENTADO PARA PRUEBAS)
+        # ========================================================================
+        # # Tarea 1: Verificar y enviar correos pendientes (varias veces al día)
+        # interval_hours = 24 / settings.scheduler_checks_per_day
+        # self.scheduler.add_job(
+        #     self.process_pending_emails,
+        #     IntervalTrigger(hours=interval_hours),
+        #     id='process_pending_emails',
+        #     name='Procesar correos pendientes',
+        #     replace_existing=True
+        # )
+        #
+        # # Tarea 2: Reintentar correos fallidos (cada 2 horas)
+        # self.scheduler.add_job(
+        #     self.retry_failed_emails,
+        #     IntervalTrigger(hours=2),
+        #     id='retry_failed_emails',
+        #     name='Reintentar correos fallidos',
+        #     replace_existing=True
+        # )
+
+        # ========================================================================
+        # MODO PRUEBAS - Intervalos por minutos (ACTIVO)
+        # ========================================================================
+        # Tarea 1: Verificar y enviar correos pendientes (cada 5 minutos)
+        self.logger.warning("⚠️ MODO PRUEBAS: Scheduler ejecutándose cada 5 minutos")
         self.scheduler.add_job(
             self.process_pending_emails,
-            IntervalTrigger(hours=interval_hours),
+            IntervalTrigger(minutes=5),  # 5 minutos para pruebas
             id='process_pending_emails',
-            name='Procesar correos pendientes',
+            name='Procesar correos pendientes (PRUEBAS: 5min)',
             replace_existing=True
         )
 
-        # Tarea 2: Reintentar correos fallidos (cada 2 horas)
+        # Tarea 2: Reintentar correos fallidos (cada 10 minutos)
         self.scheduler.add_job(
             self.retry_failed_emails,
-            IntervalTrigger(hours=2),
+            IntervalTrigger(minutes=10),  # 10 minutos para pruebas
             id='retry_failed_emails',
-            name='Reintentar correos fallidos',
+            name='Reintentar correos fallidos (PRUEBAS: 10min)',
             replace_existing=True
         )
 
@@ -133,44 +158,53 @@ class OCScheduler:
 
                 # 2. Recordatorio día 2
                 elif reserva.necesita_recordatorio_dia2:
-                    dias_config = config_cliente.dias_recordatorio_1 or settings.days_for_reminder_1
-                    if reserva.dias_desde_creacion >= dias_config:
-                        self.logger.info(
-                            f"📧 Enviando recordatorio día {dias_config}: Reserva {reserva.id_reserva}"
-                        )
-                        success = email_sender.send_recordatorio_dia2(
-                            reserva=reserva,
-                            db=db,
-                            to_email=config_cliente.email_contacto
-                        )
-                        if success:
-                            sent_count += 1
-                            correo_enviado = True
+                    self.logger.info(
+                        f"📧 Enviando recordatorio: Reserva {reserva.id_reserva} ({reserva.minutos_desde_creacion} min)"
+                    )
+                    success = email_sender.send_recordatorio_dia2(
+                        reserva=reserva,
+                        db=db,
+                        to_email=config_cliente.email_contacto
+                    )
+                    if success:
+                        sent_count += 1
+                        correo_enviado = True
 
                 # 3. Ultimátum día 4
                 elif reserva.necesita_ultimatum_dia4:
-                    dias_config = config_cliente.dias_recordatorio_2 or settings.days_for_reminder_2
-                    if reserva.dias_desde_creacion >= dias_config:
-                        self.logger.info(
-                            f"🚨 Enviando ultimátum día {dias_config}: Reserva {reserva.id_reserva}"
-                        )
-                        success = email_sender.send_ultimatum_dia4(
-                            reserva=reserva,
-                            db=db,
-                            to_email=config_cliente.email_contacto
-                        )
-                        if success:
-                            sent_count += 1
-                            correo_enviado = True
+                    self.logger.info(
+                        f"🚨 Enviando ultimátum: Reserva {reserva.id_reserva} ({reserva.minutos_desde_creacion} min)"
+                    )
+                    success = email_sender.send_ultimatum_dia4(
+                        reserva=reserva,
+                        db=db,
+                        to_email=config_cliente.email_contacto
+                    )
+                    if success:
+                        sent_count += 1
+                        correo_enviado = True
 
-                # Si ya pasaron más de 5 días sin OC, marcar como expirada
-                if reserva.dias_desde_creacion > 5 and not correo_enviado:
+                # ============================================================
+                # MODO PRUEBAS: Marcar como expirada después de 90 minutos
+                # MODO PRODUCCIÓN: Marcar como expirada después de 5 días
+                # ============================================================
+                # Si ya pasaron más de 90 minutos sin OC (30min después del ultimátum), marcar como expirada
+                if reserva.minutos_desde_creacion > 90 and not correo_enviado:
                     self.logger.warning(
                         f"⚠️ Reserva {reserva.id_reserva} marcada como EXPIRADA "
-                        f"(sin OC después de {reserva.dias_desde_creacion} días)"
+                        f"(sin OC después de {reserva.minutos_desde_creacion} minutos)"
                     )
                     reserva.estado_oc = EstadoOC.EXPIRADA
                     db.commit()
+
+                # Para producción, descomentar y comentar la lógica de arriba:
+                # if reserva.dias_desde_creacion > 5 and not correo_enviado:
+                #     self.logger.warning(
+                #         f"⚠️ Reserva {reserva.id_reserva} marcada como EXPIRADA "
+                #         f"(sin OC después de {reserva.dias_desde_creacion} días)"
+                #     )
+                #     reserva.estado_oc = EstadoOC.EXPIRADA
+                #     db.commit()
 
             self.logger.info(f"✅ Procesamiento completado: {sent_count} correos enviados")
 

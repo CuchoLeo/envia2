@@ -11,11 +11,22 @@ El sistema está configurado actualmente en **MODO PRUEBAS** con periodos de rec
 
 ### Modo Pruebas (ACTUAL)
 
+#### Recordatorios
+
 | Evento | Tiempo | Estado |
 |--------|--------|--------|
 | **Solicitud Inicial** | Inmediatamente (día 0) | ✅ Activo |
 | **Recordatorio** | 30 minutos después | ✅ Activo |
 | **Ultimátum** | 60 minutos (1 hora) después | ✅ Activo |
+
+#### Scheduler
+
+| Tarea | Intervalo Pruebas | Intervalo Producción |
+|-------|------------------|---------------------|
+| **Procesar correos pendientes** | ✅ Cada 5 minutos | ❌ Cada 6 horas |
+| **Reintentar correos fallidos** | ✅ Cada 10 minutos | ❌ Cada 2 horas |
+| **Limpieza de expiradas** | Diario 2 AM | Diario 2 AM |
+| **Reporte diario** | Diario 8 AM | Diario 8 AM |
 
 ### Modo Producción (Comentado)
 
@@ -24,6 +35,7 @@ El sistema está configurado actualmente en **MODO PRUEBAS** con periodos de rec
 | Solicitud Inicial | Día 0 | ❌ N/A |
 | Recordatorio | Día 2 (48 horas) | ❌ Comentado |
 | Ultimátum | Día 4 (96 horas) | ❌ Comentado |
+| Scheduler | Cada 6 horas | ❌ Comentado |
 
 ## 🔧 Cambios Realizados en `database.py`
 
